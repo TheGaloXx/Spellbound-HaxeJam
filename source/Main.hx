@@ -13,6 +13,8 @@ class Main extends Sprite
 		super();
 
 		FlxG.save.bind('Spellbound');
-		addChild(new FlxGame(0, 0, PlayState, 60, 60, true, false));
+		addChild(new FlxGame(0, 0, MainMenu, 60, 60, true, false));
+
+		FlxG.keys.preventDefaultKeys = [TAB, UP, DOWN, LEFT, RIGHT, F11, #if !debug F12 #end];
 	}
 }

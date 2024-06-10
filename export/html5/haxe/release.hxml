@@ -10,6 +10,8 @@
 --macro keep('IntIterator')
 -cp D:/HaxeToolkit/haxe/lib/hscript/2,5,0
 -D hscript=2.5.0
+-cp D:/HaxeToolkit/haxe/lib/flixel-addons/3,2,3
+-D flixel-addons=3.2.3
 -cp source
 -D ANDROID_SETUP=true
 -D ANDROID_NDK_ROOT=D:\Android\android-ndk-r15c
