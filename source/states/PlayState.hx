@@ -34,6 +34,8 @@ class PlayState extends FlxState
 		add(enemy);
 
 		player = new Player();
+		player.screenCenter();
+		player.x += -350 - player.width;
 		add(player);
 	}
 
