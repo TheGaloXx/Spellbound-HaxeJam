@@ -1,7 +1,12 @@
 package objects.characters;
 
 import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import objects.attacks.BaseProjectile;
+import states.PlayState;
 
 using StringTools;
 
@@ -14,6 +19,8 @@ class BaseCharacter extends FlxSprite
 	public var speed_mult:Float = 1;
 	public var canMove:Bool = true;
 	public var acceptInput:Bool = true;
+	public var stunned:Bool = false;
+	public var health:Float = 100;
 
 	public var speed(get, default):Float;
 
@@ -53,7 +60,7 @@ class BaseCharacter extends FlxSprite
 			animation.play('placeholder');
 	}
 
-	private function specialAnim(name:String, time:Float = 0.3):Void
+	public function specialAnim(name:String, time:Float = 0.3):Void
 	{
 		playAnim(name, true);
 
@@ -67,5 +74,47 @@ class BaseCharacter extends FlxSprite
 			acceptInput = true;
 			playAnim('idle');
 		});
+	}
+
+	public function hurt(damage:Float, projectile:BaseProjectile):Void
+	{
+		if (stunned)
+			return;
+
+		health -= damage;
+
+		final hud = PlayState.current.hud;
+		final healthbar = (Std.isOfType(this, Player) ? hud.playerStats : hud.enemyStats);
+		healthbar.updateHealthBar(health);
+
+		canMove = false;
+		acceptInput = false;
+		stunned = true;
+
+		flipX = projectile.x + width / 2 < this.x + width / 2;
+
+		FlxTween.cancelTweensOf(this, ['x', 'y']);
+		FlxFlicker.stopFlickering(this);
+
+		if (health <= 0)
+		{
+			specialAnim('dead', 9999);
+
+			FlxTween.tween(this, {x: this.x + 60}, 1, {ease: FlxEase.sineOut});
+			PlayState.current.endBattle();
+
+			return;
+		}
+
+		FlxTween.shake(this, 0.05, 0.5, XY, {
+			onComplete: (_) ->
+			{
+				canMove = true;
+				acceptInput = true;
+				FlxFlicker.flicker(this, 1.5, 0.04, true, true, (_) -> stunned = false);
+			}
+		});
+
+		specialAnim('hurt', 1);
 	}
 }

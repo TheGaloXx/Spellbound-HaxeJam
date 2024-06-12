@@ -10,12 +10,9 @@ class Bar extends FlxSpriteGroup
 {
 	private var magicFill:FlxSprite;
 	private var magicRect:FlxRect = FlxRect.get();
-	private var playerMagic:Float = 100;
 
 	private var healthBar:FlxSprite;
 	private var healthRect:FlxRect = FlxRect.get();
-
-	public var playerHealth:Float = 100;
 
 	public var habilities:Array<FlxSprite> = [];
 
@@ -77,15 +74,6 @@ class Bar extends FlxSpriteGroup
 
 		healthBar = makeBar();
 		healthBar.animation.curAnim.curFrame = 1;
-
-		FlxTween.tween(this, {playerHealth: 0, playerMagic: 0}, 1, {
-			type: PINGPONG,
-			onUpdate: (_) ->
-			{
-				updateHealthBar(playerHealth);
-				updateMagicBar(playerMagic);
-			}
-		});
 
 		backFill.setPosition(icon.x + (icon.width - backFill.width) / 2, icon.y + (icon.height - backFill.height) / 2);
 		magicFill.setPosition(backFill.x, backFill.y);

@@ -40,7 +40,7 @@ class MainMenu extends FlxState
 
 			spr.scale.set(scaleX * 1.05, scaleY * 1.05);
 			FlxTween.tween(spr.scale, {x: scaleX, y: scaleY}, 0.5, {ease: FlxEase.elasticOut});
-		});
+		}, null, null, null, null, true, false);
 
 		var play = new FlxButton(0, 0, 'Play', () ->
 		{
