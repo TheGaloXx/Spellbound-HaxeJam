@@ -10,6 +10,8 @@ import objects.*;
 import objects.attacks.BaseProjectile;
 import objects.attacks.ProjectileManager;
 import objects.characters.*;
+import objects.particles.ParticlesManager.ParticleManager;
+import objects.particles.Sparks;
 import objects.ui.*;
 
 class PlayState extends FlxState
@@ -20,12 +22,13 @@ class PlayState extends FlxState
 
 	public var characters:FlxTypedGroup<BaseCharacter>;
 
-	private var player:Player;
-	private var enemy:Enemy;
+	public var player:Player;
+	public var enemy:Enemy;
 
 	public var hud:HUD;
 
 	public var projectilesManager:ProjectileManager;
+	public var particlesManager:ParticleManager;
 
 	override public function new()
 	{
@@ -50,7 +53,7 @@ class PlayState extends FlxState
 		characters = new FlxTypedGroup<BaseCharacter>();
 		add(characters);
 
-		enemy = new Enemy();
+		enemy = new Enemy(FlxG.random.int(1, 10));
 		enemy.screenCenter();
 		enemy.x += 350;
 		characters.add(enemy);
@@ -65,12 +68,18 @@ class PlayState extends FlxState
 	{
 		projectilesManager = new ProjectileManager();
 		add(projectilesManager);
+
+		particlesManager = new ParticleManager();
+		add(particlesManager);
 	}
 
 	function addHUD():Void
 	{
 		hud = new HUD();
 		add(hud);
+
+		enemy.hudBar = hud.enemyStats;
+		player.hudBar = hud.playerStats;
 	}
 
 	override public function create()
@@ -90,12 +99,29 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 
-		FlxG.overlap(characters, projectilesManager, (character:BaseCharacter, projectile:BaseProjectile) ->
+		for (character in characters.members)
+			character.hudBar.camera.alpha = (character.overlaps(character.hudBar) ? 0.4 : 1);
+
+		FlxG.overlap(characters, projectilesManager, (victim:BaseCharacter, projectile:BaseProjectile) ->
 		{
-			if (projectile.parent != character)
+			final attacker:BaseCharacter = projectile.parent;
+
+			if (attacker != victim)
 			{
-				character.hurt(projectile.damage, projectile);
+				if (!victim.stunned)
+				{
+					attacker.magic += projectile.magicGain;
+					attacker.hudBar.updateMagicBar(attacker.magic);
+				}
+
+				victim.hurt(projectile.damage, projectile);
 				projectile.kill();
+
+				if (projectile.type == 'spear')
+				{
+					var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
+					sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
+				}
 			}
 		});
 	}
@@ -105,7 +131,6 @@ class PlayState extends FlxState
 		super.destroy();
 
 		FlxG.mouse.unload();
-		FlxG.mouse.cursor.smoothing = true;
 		current = null;
 	}
 
@@ -113,6 +138,8 @@ class PlayState extends FlxState
 	{
 		var winner:BaseCharacter = (player.stunned ? enemy : player);
 
+		winner.velocity.set();
+		winner.specialAnim('idle', 1);
 		winner.acceptInput = false;
 		winner.canMove = false;
 

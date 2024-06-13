@@ -6,6 +6,9 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import objects.attacks.BaseProjectile;
+import objects.attacks.Bottle;
+import objects.attacks.Spear;
+import objects.ui.Bar;
 import states.PlayState;
 
 using StringTools;
@@ -21,6 +24,8 @@ class BaseCharacter extends FlxSprite
 	public var acceptInput:Bool = true;
 	public var stunned:Bool = false;
 	public var health:Float = 100;
+	public var magic:Float = 0;
+	public var hudBar:Bar;
 
 	public var speed(get, default):Float;
 
@@ -82,10 +87,7 @@ class BaseCharacter extends FlxSprite
 			return;
 
 		health -= damage;
-
-		final hud = PlayState.current.hud;
-		final healthbar = (Std.isOfType(this, Player) ? hud.playerStats : hud.enemyStats);
-		healthbar.updateHealthBar(health);
+		hudBar.updateHealthBar(health);
 
 		canMove = false;
 		acceptInput = false;
@@ -116,5 +118,26 @@ class BaseCharacter extends FlxSprite
 		});
 
 		specialAnim('hurt', 1);
+	}
+
+	public function throwAttack(type:String, targetX:Float, targetY:Float):Void
+	{
+		specialAnim('attack');
+
+		switch (type)
+		{
+			case 'spear':
+				var spear:Spear = cast PlayState.current.projectilesManager.getNewProjectile('spear');
+				spear.init(this.x + (this.width - spear.width) / 2, this.y + (this.height - spear.height) / 2);
+				spear.setTarget(targetX, targetY);
+				spear.parent = this;
+			case 'bottle':
+				var bottle:Bottle = cast PlayState.current.projectilesManager.getNewProjectile('bottle');
+				bottle.init(this.x + (this.width - bottle.width) / 2, this.y + (this.height - bottle.height) / 2);
+				bottle.setTarget(targetX, targetY);
+				bottle.parent = this;
+		}
+
+		flipX = targetX < this.x + this.width / 2;
 	}
 }

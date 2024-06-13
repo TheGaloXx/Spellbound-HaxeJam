@@ -1,10 +1,8 @@
 package objects.ui;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
-import flixel.tweens.FlxTween;
 
 class Bar extends FlxSpriteGroup
 {
@@ -85,7 +83,7 @@ class Bar extends FlxSpriteGroup
 			hability.loadGraphic('assets/images/ui/habilities.png', true, 6, 6);
 			hability.animation.add('off', [0], 0, false);
 			hability.animation.add('on', [1], 0, false);
-			hability.animation.play('on');
+			hability.animation.play('off');
 			hability.setGraphicSize(hability.width * Main.pixel_mult);
 			hability.updateHitbox();
 			hability.flipX = flip;
@@ -121,21 +119,6 @@ class Bar extends FlxSpriteGroup
 
 		healthRect.set(0, 0, rectWidth, healthBar.height);
 		healthBar.clipRect = healthRect;
-
-		for (i in habilities)
-		{
-			FlxG.watch.addQuick('hability${i.ID}:', i.offset);
-			if (FlxG.keys.pressed.LEFT)
-				i.offset.x += FlxG.elapsed * 40;
-			if (FlxG.keys.pressed.RIGHT)
-				i.offset.x -= FlxG.elapsed * 40;
-			if (FlxG.keys.pressed.UP)
-				i.offset.y += FlxG.elapsed * 40;
-			if (FlxG.keys.pressed.DOWN)
-				i.offset.y -= FlxG.elapsed * 40;
-
-			i.offset.round();
-		}
 	}
 
 	public function updateMagicBar(newMagic:Float):Void

@@ -1,33 +1,35 @@
-package objects.attacks;
+package objects.particles;
 
 import flixel.FlxSprite;
-import objects.characters.BaseCharacter;
 
-class BaseProjectile extends FlxSprite
+class BaseParticle extends FlxSprite
 {
-	private inline static final frameSize:Int = 16;
-
-	private var size:Float;
-
 	public var type:String;
-	public var parent:BaseCharacter;
-	public var damage:Float;
-	public var magicGain:Float = 10;
 
-	public function new(type:String, damage:Float, size:Float = 1)
+	public function new(type:String)
 	{
 		super();
 
 		this.type = type;
-		this.damage = damage;
-		this.size = size;
 
-		loadGraphic('assets/images/attacks.png', true, 16, 16);
-		animation.add('bottle', [2, 4, 9], 0, false);
-		animation.add('spear', [10], 0, false);
-		animation.play(type);
+		if (type == 'sparks')
+		{
+			loadGraphic('assets/images/sparks.png', true, 32, 32);
+			animation.add('sparks', [0, 1, 2, 3, 4], 12, false);
+			animation.play(type);
 
-		setGraphicSize(frameSize * Main.pixel_mult);
+			setGraphicSize(32 * Main.pixel_mult);
+		}
+		else
+		{
+			loadGraphic('assets/images/particles.png', true, 16, 16);
+			animation.add('bottle', [0, 1, 2, 3, 4], 12, false);
+			animation.add('smoke', [5, 6, 7], 0, false);
+			animation.play(type);
+
+			setGraphicSize(16 * Main.pixel_mult);
+		}
+
 		updateHitbox();
 	}
 
@@ -37,27 +39,17 @@ class BaseProjectile extends FlxSprite
 
 		velocity.set();
 		acceleration.set();
-		setGraphicSize(frameSize * Main.pixel_mult);
-		updateHitbox();
-		scale.x *= size;
-		scale.y *= size;
 
 		angle = 0;
 		alpha = 1;
 
 		visible = true;
 		active = true;
-
-		checkTime = 0;
-		timeAlive = 0;
-
-		parent = null;
 	}
 
 	override function kill():Void
 	{
 		active = false;
-		parent = null;
 
 		super.kill();
 	}

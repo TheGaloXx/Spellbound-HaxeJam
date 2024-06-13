@@ -1,6 +1,7 @@
 package objects.characters;
 
 import flixel.FlxG;
+import objects.attacks.Bottle;
 import objects.attacks.Spear;
 import states.PlayState;
 
@@ -28,14 +29,14 @@ class Player extends BaseCharacter
 
 		if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)
 		{
-			specialAnim('attack');
-
-			var spear:Spear = cast PlayState.current.projectilesManager.getNewProjectile('spear');
-			spear.init(this.x + (this.width - spear.width) / 2, this.y + (this.height - spear.height) / 2);
-			spear.setTarget(FlxG.mouse.screenX, FlxG.mouse.screenY);
-			spear.parent = this;
-
-			flipX = FlxG.mouse.screenX < this.x + this.width / 2;
+			if (FlxG.mouse.justPressed)
+			{
+				throwAttack('spear', FlxG.mouse.screenX, FlxG.mouse.screenY);
+			}
+			else
+			{
+				throwAttack('bottle', FlxG.mouse.screenX, FlxG.mouse.screenY);
+			}
 		}
 
 		if (FlxG.keys.justPressed.SPACE)

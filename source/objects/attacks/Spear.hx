@@ -7,12 +7,6 @@ class Spear extends BaseProjectile
 		super('spear', 20, 0.8);
 	}
 
-	/*
-		override public function init(posX:Float, posY:Float):Void
-		{
-			super.init(posX, posY);
-		}
-	 */
 	public function setTarget(posX:Float, posY:Float):Void
 	{
 		var dx:Float = posX - x - width / 2;
