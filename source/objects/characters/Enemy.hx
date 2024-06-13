@@ -96,16 +96,9 @@ class Enemy extends BaseCharacter
 			{
 				attackTimer = 0;
 
-				specialAnim('attack');
-
 				final player = PlayState.current.player;
 
-				var spear:Spear = cast PlayState.current.projectilesManager.getNewProjectile('spear');
-				spear.init(this.x + (this.width - spear.width) / 2, this.y + (this.height - spear.height) / 2);
-				spear.setTarget(player.x + player.width / 2, player.y + player.height / 2);
-				spear.parent = this;
-
-				flipX = true;
+				throwAttack('spear', player.x + player.width / 2, player.y + player.height / 2);
 			}
 		}
 

@@ -31,7 +31,7 @@ class Player extends BaseCharacter
 		{
 			if (FlxG.mouse.justPressed)
 			{
-				throwAttack('spear', FlxG.mouse.screenX, FlxG.mouse.screenY);
+				throwAttack('prism', FlxG.mouse.screenX, FlxG.mouse.screenY);
 			}
 			else
 			{

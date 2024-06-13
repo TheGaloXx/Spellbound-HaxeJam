@@ -53,7 +53,7 @@ class PlayState extends FlxState
 		characters = new FlxTypedGroup<BaseCharacter>();
 		add(characters);
 
-		enemy = new Enemy(FlxG.random.int(1, 10));
+		enemy = new Enemy(SelectionState.curLevel);
 		enemy.screenCenter();
 		enemy.x += 350;
 		characters.add(enemy);
@@ -93,6 +93,8 @@ class PlayState extends FlxState
 		addCharacters();
 		addProjectiles();
 		addHUD();
+
+		FlxG.sound.playMusic('assets/music/battle_theme.mp3', 0.3);
 	}
 
 	override public function update(elapsed:Float)
@@ -111,16 +113,30 @@ class PlayState extends FlxState
 				if (!victim.stunned)
 				{
 					attacker.magic += projectile.magicGain;
-					attacker.hudBar.updateMagicBar(attacker.magic);
+
+					victim.magic += projectile.magicGain / 2;
+					victim.hurt(projectile.damage, projectile);
 				}
 
-				victim.hurt(projectile.damage, projectile);
 				projectile.kill();
 
-				if (projectile.type == 'spear')
+				switch (projectile.type)
 				{
-					var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
-					sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
+					case 'spear':
+						var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
+						sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
+					case 'prism':
+						if (!victim.stunned && victim.speed_mult == 1)
+						{
+							victim.color = 0xff5bbbff;
+							victim.speed_mult = 0.4;
+
+							FlxTimer.wait(1, () ->
+							{
+								victim.color = 0xffffffff;
+								victim.speed_mult = 1;
+							});
+						}
 				}
 			}
 		});
@@ -136,12 +152,15 @@ class PlayState extends FlxState
 
 	public function endBattle():Void
 	{
+		FlxG.sound.music.stop();
+
 		var winner:BaseCharacter = (player.stunned ? enemy : player);
 
 		winner.velocity.set();
 		winner.specialAnim('idle', 1);
 		winner.acceptInput = false;
 		winner.canMove = false;
+		winner.flipX = winner == enemy;
 
 		FlxTimer.wait(1, () -> winner.specialAnim('cheer', 9999));
 		FlxTimer.wait(3, () ->

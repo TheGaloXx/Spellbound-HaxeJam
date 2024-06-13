@@ -3,6 +3,8 @@ package objects.ui;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 
 class Bar extends FlxSpriteGroup
 {
@@ -77,7 +79,7 @@ class Bar extends FlxSpriteGroup
 		magicFill.setPosition(backFill.x, backFill.y);
 		add(icon);
 
-		for (i in 0...3)
+		for (i in 0...2)
 		{
 			var hability = new FlxSprite();
 			hability.loadGraphic('assets/images/ui/habilities.png', true, 6, 6);
@@ -96,8 +98,6 @@ class Bar extends FlxSpriteGroup
 				case 0:
 					hability.offset.set(17, -27);
 				case 1:
-					hability.offset.set(-16, 13);
-				case 2:
 					hability.offset.set(-77, 22);
 			}
 
@@ -113,13 +113,19 @@ class Bar extends FlxSpriteGroup
 		}
 	}
 
+	public var oldHealth:Float;
+
 	public function updateHealthBar(newHealth:Float):Void
 	{
 		var rectWidth:Float = newHealth / 100 * healthBar.frameWidth;
 
 		healthRect.set(0, 0, rectWidth, healthBar.height);
 		healthBar.clipRect = healthRect;
+
+		oldHealth = newHealth;
 	}
+
+	public var oldMagic:Float;
 
 	public function updateMagicBar(newMagic:Float):Void
 	{
@@ -127,6 +133,17 @@ class Bar extends FlxSpriteGroup
 
 		healthRect.set(0, 0, magicFill.width, rectHeight);
 		magicFill.clipRect = healthRect;
+
+		oldMagic = newMagic;
+
+		if (newMagic >= 100)
+		{
+			FlxTween.num(255, 1, 0.5, {ease: FlxEase.backOut}, (value) ->
+			{
+				for (i in 0...3)
+					members[i].setColorTransform(value, value, value);
+			});
+		}
 	}
 
 	override function destroy():Void

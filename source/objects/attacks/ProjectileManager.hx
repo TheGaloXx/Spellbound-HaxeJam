@@ -9,7 +9,7 @@ class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 	{
 		super();
 
-		for (type in ['spear', 'bottle'])
+		for (type in ['spear', 'bottle', 'prism'])
 		{
 			getNewProjectile(type).kill(); // spawn at least one of each so it doesnt lag the first time you generate them
 		}
@@ -45,6 +45,8 @@ class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 					new Spear();
 				case 'bottle':
 					new Bottle();
+				case 'prism':
+					new IcePrism();
 				default:
 					new Spear();
 			}

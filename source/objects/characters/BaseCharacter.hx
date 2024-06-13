@@ -1,12 +1,15 @@
 package objects.characters;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
+import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import objects.attacks.BaseProjectile;
 import objects.attacks.Bottle;
+import objects.attacks.IcePrism;
 import objects.attacks.Spear;
 import objects.ui.Bar;
 import states.PlayState;
@@ -23,8 +26,8 @@ class BaseCharacter extends FlxSprite
 	public var canMove:Bool = true;
 	public var acceptInput:Bool = true;
 	public var stunned:Bool = false;
-	public var health:Float = 100;
-	public var magic:Float = 0;
+	public var health(default, set):Float = 100;
+	public var magic(default, set):Float = 0;
 	public var hudBar:Bar;
 
 	public var speed(get, default):Float;
@@ -57,6 +60,13 @@ class BaseCharacter extends FlxSprite
 		timer = new FlxTimer();
 	}
 
+	override function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
+
+		magic += elapsed;
+	}
+
 	private function playAnim(name:String, force:Bool = false, frame:Int = 0):Void
 	{
 		if (animation.exists(name))
@@ -87,7 +97,6 @@ class BaseCharacter extends FlxSprite
 			return;
 
 		health -= damage;
-		hudBar.updateHealthBar(health);
 
 		canMove = false;
 		acceptInput = false;
@@ -101,6 +110,7 @@ class BaseCharacter extends FlxSprite
 		if (health <= 0)
 		{
 			specialAnim('dead', 9999);
+			FlxG.sound.play('assets/sounds/dead.mp3');
 
 			FlxTween.tween(this, {x: this.x + 60}, 1, {ease: FlxEase.sineOut});
 			PlayState.current.endBattle();
@@ -136,8 +146,52 @@ class BaseCharacter extends FlxSprite
 				bottle.init(this.x + (this.width - bottle.width) / 2, this.y + (this.height - bottle.height) / 2);
 				bottle.setTarget(targetX, targetY);
 				bottle.parent = this;
+			case 'prism':
+				var firstAngle:Float = 361;
+				for (i in 0...3)
+				{
+					var prism:IcePrism = cast PlayState.current.projectilesManager.getNewProjectile('prism');
+					prism.init(this.x + (this.width - prism.width) / 2, this.y + (this.height - prism.height) / 2);
+					prism.parent = this;
+
+					if (firstAngle == 361)
+					{
+						prism.setTarget(targetX, targetY);
+						firstAngle = prism.angle;
+					}
+					else
+					{
+						prism.setTarget(0, 0, firstAngle + 20 * (i == 1 ? -1 : 1));
+					}
+				}
 		}
 
 		flipX = targetX < this.x + this.width / 2;
+	}
+
+	function set_health(value:Float):Float
+	{
+		value = FlxMath.bound(value, 0, 100);
+
+		if (health == value)
+			return health;
+
+		health = value;
+		hudBar.updateHealthBar(health);
+
+		return health;
+	}
+
+	function set_magic(value:Float):Float
+	{
+		value = FlxMath.bound(value, 0, 100);
+
+		if (magic == value)
+			return magic;
+
+		magic = value;
+		hudBar.updateMagicBar(magic);
+
+		return magic;
 	}
 }
