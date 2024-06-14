@@ -1,0 +1,8 @@
+{
+    "title": "Glacial Prison",
+    "damage": 0,
+    "cost": 100,
+    "duration": 6,
+    "description": "Freezes the opponent completely, at the cost of all of your magic.",
+    "codeName": "ice"
+}

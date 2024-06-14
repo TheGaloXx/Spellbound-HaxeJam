@@ -6,6 +6,7 @@ import flixel.sound.FlxSound;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
+import states.SelectionState;
 import states.StartScreen;
 #if !debug
 import haxe.Log;
@@ -25,7 +26,7 @@ class Main extends Sprite
 		#end
 
 		FlxG.save.bind('Spellbound');
-		addChild(new FlxGame(0, 0, StartScreen, 60, 60, true, false));
+		addChild(new FlxGame(0, 0, #if SKIP_INTRO SelectionState #else StartScreen #end, 60, 60, true, false));
 
 		FlxG.keys.preventDefaultKeys = [TAB, UP, DOWN, LEFT, RIGHT, F1, F11, #if !debug F12 #end];
 		FlxG.sound.muteKeys = [];

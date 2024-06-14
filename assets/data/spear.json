@@ -1,0 +1,7 @@
+{
+    "title": "Spear of Light",
+    "damage": 10,
+    "cooldown": 1,
+    "description": "Throws a spear made of light that deals decent damage. Just aim at the opponent with it.",
+    "codeName": "spear"
+}

@@ -1,0 +1,7 @@
+{
+    "title": "Alchemist's Blast",
+    "damage": 25,
+    "cooldown": 3,
+    "description": "Throws a bottle of magic in the air that explodes on impact, dealing significant damage.",
+    "codeName": "bottle"
+}

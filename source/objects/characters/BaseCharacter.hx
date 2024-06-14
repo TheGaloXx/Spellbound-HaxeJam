@@ -29,6 +29,7 @@ class BaseCharacter extends FlxSprite
 	public var health(default, set):Float = 100;
 	public var magic(default, set):Float = 0;
 	public var hudBar:Bar;
+	public var dead:Bool = false;
 
 	public var speed(get, default):Float;
 
@@ -109,10 +110,12 @@ class BaseCharacter extends FlxSprite
 
 		if (health <= 0)
 		{
+			dead = true;
+
 			specialAnim('dead', 9999);
 			FlxG.sound.play('assets/sounds/dead.mp3');
 
-			FlxTween.tween(this, {x: this.x + 60}, 1, {ease: FlxEase.sineOut});
+			FlxTween.tween(this, {x: this.x + (Std.isOfType(this, Player) ? -60 : 60)}, 1, {ease: FlxEase.sineOut});
 			PlayState.current.endBattle();
 
 			return;

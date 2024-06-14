@@ -154,7 +154,7 @@ class PlayState extends FlxState
 	{
 		FlxG.sound.music.stop();
 
-		var winner:BaseCharacter = (player.stunned ? enemy : player);
+		var winner:BaseCharacter = (player.dead ? enemy : player);
 
 		winner.velocity.set();
 		winner.specialAnim('idle', 1);
