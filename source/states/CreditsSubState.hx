@@ -3,7 +3,7 @@ package states;
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.addons.display.FlxBackdrop;
-import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 
 class CreditsSubState extends FlxSubState
@@ -21,29 +21,16 @@ class CreditsSubState extends FlxSubState
 	{
 		super.create();
 
-		var credits:String = 'Spellbound made by TheGalo X & GlassGuy_
+		var credits:String = 'Spellbound made by TheGalo X & GlassGuy_\n\n'
+			+ 'Programming & music - TheGalo X\nArtwork & music - GlassGuy_\n\n\n'
+			+ 'SFX:\n\n'
+			+ 'Universal UI Soundpack\nCreated and distributed by Nathan Gibson\n(nathangibson.myportfolio.com)\nCreation date: 27/9/2021\n\n'
+			+ 'Retro Falling Down SFX\n(pixabay.com/sound-effects/retro-falling-down-sfx-85575)';
 
-Programming & music - TheGalo X
-Artwork & music - GlassGuy_
-
-
-SFX:
-
-Universal UI Soundpack
-Created and distributed by Nathan Gibson
-(nathangibson.myportfolio.com)
-Creation date: 27/9/2021
-
-Retro Falling Down SFX
-(pixabay.com/sound-effects/retro-falling-down-sfx-85575)';
-
-		var text = new FlxBitmapText(0, 0, credits);
-		text.scale.set(4, 4);
-		text.updateHitbox();
+		var text = new FlxText(0, 0, FlxG.width / 2, credits, 32);
 		text.active = false;
 		text.autoSize = false;
 		text.alignment = CENTER;
-		text.fieldWidth = Std.int(FlxG.width / 2);
 		text.screenCenter();
 		add(text);
 

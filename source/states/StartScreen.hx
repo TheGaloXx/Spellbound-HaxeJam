@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.input.mouse.FlxMouseEvent;
-import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
@@ -18,13 +18,9 @@ class StartScreen extends FlxState
 	{
 		super.create();
 
-		var text = new FlxBitmapText(0, 100);
-		text.text = 'Game made for';
-		text.scale.set(4, 4);
-		text.updateHitbox();
+		var text = new FlxText(0, 100, 0, 'Game made for', 32);
 		text.active = false;
 		text.screenCenter(X);
-		trace(text.height);
 		add(text);
 
 		var logo = new FlxSprite();

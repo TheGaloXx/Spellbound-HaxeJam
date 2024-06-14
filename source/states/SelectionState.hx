@@ -7,7 +7,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
-import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import haxe.Json;
@@ -19,7 +19,7 @@ class SelectionState extends FlxState
 {
 	private var habilityDescriptions:Map<String, String>;
 
-	private var levelText:FlxBitmapText;
+	private var levelText:FlxText;
 	private var portraits:FlxTypedSpriteGroup<BoxOutline>;
 	private var selectOutline:BoxOutline;
 	private var outlines:FlxTypedGroup<BoxOutline>;
@@ -40,28 +40,13 @@ class SelectionState extends FlxState
 			var rawJson:String = Assets.getText('assets/data/$i.json');
 			var json:Dynamic = Json.parse(rawJson);
 
-			json.description = StringTools.replace(json.description, '\n', '
-			
-			');
-
 			if (['spear', 'bottle', 'prism'].contains(i))
 			{
-				finalDesc = '- ${json.title} -
-Damage: ${json.damage}
-Cooldown: ${json.cooldown}
-
-Description: ${json.description}';
-
+				finalDesc = '- ${json.title} -\nDamage: ${json.damage}\nCooldown: ${json.cooldown}\n\nDescription: ${json.description}';
 			}
 			else
 			{
-				finalDesc = '- ${json.title} -
-Damage: ${json.damage}
-Magic cost: ${json.cost}
-Duration: ${json.duration}
-
-Description: ${json.description}';
-
+				finalDesc = '- ${json.title} -\nDamage: ${json.damage}\nMagic cost: ${json.cost}\nDuration: ${json.duration}\n\nDescription: ${json.description}';
 			}
 
 			habilityDescriptions.set(json.codeName, finalDesc);
@@ -82,11 +67,11 @@ Description: ${json.description}';
 		bg.setPosition(80, -230);
 		add(bg);
 
-		var text = new FlxBitmapText(0, 20, 'Select your habilities');
-		text.scale.set(5, 5);
-		text.updateHitbox();
+		var text = new FlxText(0, 20, 0, 'Select your habilities', 32);
 		text.screenCenter(X);
 		text.active = false;
+		text.borderStyle = FlxTextBorderStyle.SHADOW;
+		text.borderSize = 6;
 		add(text);
 
 		var red = new FlxSprite();
@@ -111,15 +96,14 @@ Description: ${json.description}';
 		light.setPosition(red.x + (red.width - light.width) / 2, -50);
 		add(light);
 
-		levelText = new FlxBitmapText(0, 0, 'AI level: $curLevel');
-		levelText.scale.set(4, 4);
-		levelText.updateHitbox();
+		levelText = new FlxText(red.x, red.y + red.height + 5, red.width, 'AI level: $curLevel', 16);
+		levelText.autoSize = false;
+		levelText.alignment = CENTER;
 		levelText.active = false;
-		levelText.setPosition(red.x, red.y + red.height + 5);
 		add(levelText);
 
-		FlxMouseEvent.add(red, increaseAIlevel, null, null, null, null, true, false);
-		FlxMouseEvent.add(levelText, increaseAIlevel, null, null, null, null, true, false);
+		FlxMouseEvent.add(red, increaseAIlevel, null, null, null, false, true, false);
+		FlxMouseEvent.add(levelText, increaseAIlevel, null, null, null, false, true, false);
 
 		portraits = new FlxTypedSpriteGroup<BoxOutline>();
 		add(portraits);
@@ -150,16 +134,12 @@ Description: ${json.description}';
 		portraits.x = bg.x + (bg.width - portraits.width) / 2;
 		portraits.y = bg.y + bg.height - boxWidth + (boxWidth - portraits.height) / 2;
 
-		var text = new FlxBitmapText(0, 0, 'Primary attacks (up to 2)');
-		text.scale.set(3, 3);
-		text.updateHitbox();
+		var text = new FlxText(0, 0, 0, 'Primary attacks (up to 2)', 16);
 		text.setPosition(portraits.x + (portraits.width - text.width) / 2, portraits.y - text.height - 4);
 		text.active = false;
 		add(text);
 
-		var text = new FlxBitmapText(0, 0, 'Super attacks (up to 2)');
-		text.scale.set(3, 3);
-		text.updateHitbox();
+		var text = new FlxText(0, 0, 0, 'Super attacks (up to 2)', 16);
 		text.setPosition(portraits.x + (portraits.width - text.width) / 2, portraits.y + portraits.height + 10);
 		text.active = false;
 		add(text);
@@ -178,10 +158,21 @@ Description: ${json.description}';
 		play.updateHitbox();
 		play.label.setGraphicSize(play.label.width * 2);
 		play.label.updateHitbox();
-		play.setPosition(FlxG.width - 50 - play.width, FlxG.height - 50 - play.height);
+		play.setPosition(FlxG.width - 50 - play.width, FlxG.height - 30 - play.height);
 		play.alpha = 0.5;
 		play.active = false;
 		add(play);
+
+		var exit = new FlxButton(0, 0, 'Go back', () ->
+		{
+			FlxG.switchState(new MainMenu());
+		});
+		exit.setGraphicSize(exit.width * 2);
+		exit.updateHitbox();
+		exit.label.setGraphicSize(exit.label.width * 2);
+		exit.label.updateHitbox();
+		exit.setPosition(play.x - exit.width - 20, play.y);
+		add(exit);
 
 		descBox = new HabilityDescriptionBox();
 		add(descBox);
@@ -280,11 +271,11 @@ Description: ${json.description}';
 		if (outline == null)
 		{
 			outline = new BoxOutline();
+			outline.animation.play('selected');
 			outlines.add(outline);
 		}
 		else
 			outline.revive();
-		outline.color = FlxColor.RED;
 		outline.setPosition(found.x, found.y);
 		outline.ID = found.ID;
 
@@ -324,6 +315,7 @@ private class BoxOutline extends FlxSprite
 
 		loadGraphic('assets/images/attack_portraits.png', true, 32, 32);
 		animation.add('idle', [6], 0, false);
+		animation.add('selected', [7], 0, false);
 		animation.play('idle');
 		active = false;
 		setGraphicSize(width * Main.pixel_mult);

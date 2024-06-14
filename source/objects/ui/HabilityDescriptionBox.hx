@@ -4,12 +4,12 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
-import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
 
 class HabilityDescriptionBox extends FlxSpriteGroup
 {
 	public var bg:FlxSprite;
-	public var label:FlxBitmapText;
+	public var label:FlxText;
 	public var text(default, set):String;
 
 	public function new()
@@ -17,19 +17,15 @@ class HabilityDescriptionBox extends FlxSpriteGroup
 		super();
 
 		bg = new FlxSprite();
-		bg.makeGraphic(1, 1);
-		bg.color = 0xff212121;
+		bg.makeGraphic(1, 1, 0xff212121);
 		bg.active = false;
-		bg.scale.x = 600;
+		bg.scale.x = 405;
 		add(bg);
 
-		label = new FlxBitmapText(5, 5);
-		label.scale.set(3, 3);
-		label.updateHitbox();
+		label = new FlxText(5, 5, 400, '', 16);
 		label.active = false;
 		label.autoSize = false;
 		label.alignment = LEFT;
-		label.fieldWidth = 200;
 		add(label);
 
 		visible = false;

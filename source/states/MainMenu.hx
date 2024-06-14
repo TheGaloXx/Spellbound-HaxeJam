@@ -6,7 +6,7 @@ import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.mouse.FlxMouseEvent;
-import flixel.text.FlxBitmapText;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
@@ -14,9 +14,12 @@ import flixel.util.FlxTimer;
 
 class MainMenu extends FlxState
 {
+	private static var alreadyTyped:Bool = false;
+
+	private var transitioning:Bool = false;
 	private final code:Array<FlxKey> = [P, L, A, Y];
 	private final curCode:Array<FlxKey> = [];
-	private var play:FlxBitmapText;
+	private var play:FlxText;
 
 	override public function create()
 	{
@@ -40,11 +43,14 @@ class MainMenu extends FlxState
 
 		var credits = new FlxButton(50, 0, 'Credits', () ->
 		{
-			FlxMouseEvent.remove(logo);
+			if (!transitioning)
+			{
+				FlxMouseEvent.remove(logo);
 
-			var substate = new CreditsSubState(bg);
-			substate.closeCallback = () -> addLogoBop(logo);
-			openSubState(substate);
+				var substate = new CreditsSubState(bg);
+				substate.closeCallback = () -> addLogoBop(logo);
+				openSubState(substate);
+			}
 		});
 		credits.setGraphicSize(credits.width * 2);
 		credits.updateHitbox();
@@ -53,22 +59,35 @@ class MainMenu extends FlxState
 		credits.y = FlxG.height - credits.height - 50;
 		add(credits);
 
-		var help = new FlxBitmapText(0, 0, '(Type "play" to start playing!)');
-		help.active = false;
-		help.scale.set(3, 3);
-		help.updateHitbox();
-		help.screenCenter(X);
-		add(help);
+		if (!alreadyTyped)
+		{
+			var help = new FlxText(0, 0, 0, '(Type "play" to start playing!)', 24);
+			help.active = false;
+			help.screenCenter(X);
+			add(help);
 
-		play = new FlxBitmapText(0, 0, '_ _ _ _');
-		play.active = false;
-		play.scale.set(6, 6);
-		play.updateHitbox();
-		play.screenCenter(X);
-		play.y = FlxG.height - play.height - 20;
-		add(play);
+			play = new FlxText(0, 0, 0, '_ _ _ _', 50);
+			play.active = false;
+			play.screenCenter(X);
+			play.y = FlxG.height - play.height - 20;
+			add(play);
 
-		help.y = play.y - help.height - 10;
+			help.y = play.y - help.height - 10;
+		}
+		else
+		{
+			var play = new FlxButton(0, 0, 'Play', () ->
+			{
+				transition();
+			});
+			play.setGraphicSize(play.width * 2);
+			play.updateHitbox();
+			play.label.setGraphicSize(play.label.width * 2);
+			play.label.updateHitbox();
+			play.screenCenter(X);
+			play.y = credits.y;
+			add(play);
+		}
 	}
 
 	override public function update(elapsed:Float)
@@ -104,11 +123,8 @@ class MainMenu extends FlxState
 
 				if (code.length <= 0)
 				{
-					FlxG.sound.play('assets/sounds/confirm.mp3');
-					FlxTimer.wait(1, () ->
-					{
-						FlxG.switchState(new SelectionState());
-					});
+					alreadyTyped = true;
+					transition();
 				}
 			}
 		}
@@ -118,13 +134,28 @@ class MainMenu extends FlxState
 	{
 		FlxMouseEvent.add(logo, (spr:FlxSprite) ->
 		{
-			FlxTween.cancelTweensOf(spr.scale);
+			if (!transitioning)
+			{
+				FlxTween.cancelTweensOf(spr.scale);
 
-			var scaleX:Float = spr.width / spr.frameWidth;
-			var scaleY:Float = spr.height / spr.frameHeight;
+				var scaleX:Float = spr.width / spr.frameWidth;
+				var scaleY:Float = spr.height / spr.frameHeight;
 
-			spr.scale.set(scaleX * 1.05, scaleY * 1.05);
-			FlxTween.tween(spr.scale, {x: scaleX, y: scaleY}, 0.5, {ease: FlxEase.elasticOut});
-		}, null, null, null, null, true, false);
+				spr.scale.set(scaleX * 1.05, scaleY * 1.05);
+				FlxTween.tween(spr.scale, {x: scaleX, y: scaleY}, 0.5, {ease: FlxEase.elasticOut});
+			}
+		}, null, null, null, false, true, false);
+	}
+
+	function transition():Void
+	{
+		if (transitioning)
+			return;
+
+		FlxG.sound.play('assets/sounds/confirm.mp3');
+		FlxTimer.wait(1, () ->
+		{
+			FlxG.switchState(new SelectionState());
+		});
 	}
 }
