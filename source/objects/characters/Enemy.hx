@@ -19,7 +19,7 @@ class Enemy extends BaseCharacter
 
 	public function new(AI_level:Int)
 	{
-		super('red');
+		super('red', CharacterBuild.randomize());
 
 		flipX = true;
 		this.AI_level = Std.int(FlxMath.bound(AI_level, AI_level_bounds[0], AI_level_bounds[1]));
@@ -98,7 +98,7 @@ class Enemy extends BaseCharacter
 
 				final player = PlayState.current.player;
 
-				throwAttack('spear', player.x + player.width / 2, player.y + player.height / 2);
+				throwAttack(FlxG.random.bool(), player.x + player.width / 2, player.y + player.height / 2);
 			}
 		}
 

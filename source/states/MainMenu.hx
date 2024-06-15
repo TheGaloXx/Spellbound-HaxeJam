@@ -10,6 +10,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
 class MainMenu extends FlxState
@@ -50,6 +51,8 @@ class MainMenu extends FlxState
 				var substate = new CreditsSubState(bg);
 				substate.closeCallback = () -> addLogoBop(logo);
 				openSubState(substate);
+
+				FlxG.sound.play('assets/sounds/confirm.mp3', 0.85);
 			}
 		});
 		credits.setGraphicSize(credits.width * 2);
@@ -88,13 +91,21 @@ class MainMenu extends FlxState
 			play.y = credits.y;
 			add(play);
 		}
+
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+		{
+			FlxG.sound.playMusic('assets/music/menu_theme.mp3', 0.3);
+			FlxG.sound.music.fadeIn(3, 0, 0.5);
+		}
+
+		FlxG.camera.fade(FlxColor.BLACK, 1, true);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.ANY)
+		if (!alreadyTyped && FlxG.keys.justPressed.ANY)
 		{
 			var key:FlxKey = FlxG.keys.firstJustPressed();
 
@@ -152,7 +163,7 @@ class MainMenu extends FlxState
 		if (transitioning)
 			return;
 
-		FlxG.sound.play('assets/sounds/confirm.mp3');
+		FlxG.sound.play('assets/sounds/confirm.mp3', 0.85);
 		FlxTimer.wait(1, () ->
 		{
 			FlxG.switchState(new SelectionState());

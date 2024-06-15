@@ -22,6 +22,7 @@ class BaseCharacter extends FlxSprite
 
 	private var timer:FlxTimer = null;
 
+	public var build:CharacterBuild;
 	public var speed_mult:Float = 1;
 	public var canMove:Bool = true;
 	public var acceptInput:Bool = true;
@@ -38,9 +39,11 @@ class BaseCharacter extends FlxSprite
 		return base_speed * speed_mult;
 	}
 
-	public function new(path:String)
+	public function new(path:String, build:CharacterBuild)
 	{
 		super();
+
+		this.build = build;
 
 		loadGraphic('assets/images/characters/$path.png', true, 16, 16, false, path + '_WIZARD');
 		animation.add('idle', [0], 0, false);
@@ -133,9 +136,11 @@ class BaseCharacter extends FlxSprite
 		specialAnim('hurt', 1);
 	}
 
-	public function throwAttack(type:String, targetX:Float, targetY:Float):Void
+	public function throwAttack(primary1:Bool, targetX:Float, targetY:Float):Void
 	{
 		specialAnim('attack');
+
+		var type:String = (primary1 ? build.primary1 : build.primary2);
 
 		switch (type)
 		{

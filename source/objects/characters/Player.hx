@@ -1,15 +1,12 @@
 package objects.characters;
 
 import flixel.FlxG;
-import objects.attacks.Bottle;
-import objects.attacks.Spear;
-import states.PlayState;
 
 class Player extends BaseCharacter
 {
-	public function new()
+	public function new(build:CharacterBuild)
 	{
-		super('blue');
+		super('blue', build);
 	}
 
 	override function update(elapsed:Float):Void
@@ -31,11 +28,11 @@ class Player extends BaseCharacter
 		{
 			if (FlxG.mouse.justPressed)
 			{
-				throwAttack('prism', FlxG.mouse.screenX, FlxG.mouse.screenY);
+				throwAttack(true, FlxG.mouse.screenX, FlxG.mouse.screenY);
 			}
 			else
 			{
-				throwAttack('bottle', FlxG.mouse.screenX, FlxG.mouse.screenY);
+				throwAttack(false, FlxG.mouse.screenX, FlxG.mouse.screenY);
 			}
 		}
 

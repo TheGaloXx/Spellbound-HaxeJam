@@ -1,9 +1,11 @@
 package states;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import objects.*;
@@ -20,6 +22,10 @@ class PlayState extends FlxState
 
 	private var bg:FlxSprite;
 
+	private var colliders:FlxTypedGroup<FlxObject>;
+
+	private var barrier:FlxSprite;
+
 	public var characters:FlxTypedGroup<BaseCharacter>;
 
 	public var player:Player;
@@ -29,11 +35,13 @@ class PlayState extends FlxState
 
 	public var projectilesManager:ProjectileManager;
 	public var particlesManager:ParticleManager;
+	public var build:CharacterBuild;
 
-	override public function new()
+	override public function new(build:CharacterBuild)
 	{
 		super();
 
+		this.build = build;
 		current = this;
 	}
 
@@ -46,6 +54,52 @@ class PlayState extends FlxState
 		bg.updateHitbox();
 		bg.screenCenter();
 		add(bg);
+
+		barrier = new FlxSprite();
+		barrier.loadGraphic('assets/images/barrier.png');
+		barrier.setGraphicSize(barrier.width * Main.pixel_mult);
+		barrier.updateHitbox();
+		barrier.screenCenter();
+		barrier.active = false;
+		barrier.alpha = 0.5;
+		barrier.blend = ADD;
+		final scale = barrier.scale.clone();
+		FlxTween.tween(barrier.scale, {x: scale.x * 1.2, y: scale.y * 1.01}, 0.25, {type: PINGPONG});
+
+		colliders = new FlxTypedGroup<FlxObject>();
+		add(colliders);
+
+		for (i in 0...7)
+		{
+			var wall = new FlxObject();
+			wall.immovable = true;
+			colliders.add(wall);
+
+			switch (i)
+			{
+				case 0: // left
+					wall.setSize(1, FlxG.height);
+					wall.setPosition(-1, 0);
+				case 1: // top
+					wall.setSize(FlxG.width, 1);
+					wall.setPosition(0, 20);
+				case 2: // floor
+					wall.setSize(FlxG.width, 1);
+					wall.setPosition(0, FlxG.height);
+				case 3: // right
+					wall.setSize(1, FlxG.height);
+					wall.setPosition(FlxG.width, 0);
+				case 4: // middle
+					wall.setSize(5, FlxG.width);
+					wall.screenCenter();
+				case 5:
+					wall.setSize(50, 60);
+					wall.setPosition(0, 0);
+				case 6:
+					wall.setSize(50, 100);
+					wall.setPosition(FlxG.width - wall.width, FlxG.height - wall.height);
+			}
+		}
 	}
 
 	function addCharacters():Void
@@ -54,13 +108,17 @@ class PlayState extends FlxState
 		add(characters);
 
 		enemy = new Enemy(SelectionState.curLevel);
-		enemy.screenCenter();
-		enemy.x += 350;
+		enemy.screenCenter(Y);
+		enemy.x = FlxG.width;
+		enemy.immovable = true;
+		enemy.active = false;
 		characters.add(enemy);
 
-		player = new Player();
-		player.screenCenter();
-		player.x += -350 - player.width;
+		player = new Player(build);
+		player.screenCenter(Y);
+		player.x = -player.width;
+		player.immovable = true;
+		player.active = false;
 		characters.add(player);
 	}
 
@@ -92,14 +150,18 @@ class PlayState extends FlxState
 		addStage();
 		addCharacters();
 		addProjectiles();
+		add(barrier);
 		addHUD();
+		intro();
 
-		FlxG.sound.playMusic('assets/music/battle_theme.mp3', 0.3);
+		FlxG.sound.playMusic('assets/music/battle_theme.mp3', 0.2);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		FlxG.collide(characters, colliders);
 
 		for (character in characters.members)
 			character.hudBar.camera.alpha = (character.overlaps(character.hudBar) ? 0.4 : 1);
@@ -108,7 +170,7 @@ class PlayState extends FlxState
 		{
 			final attacker:BaseCharacter = projectile.parent;
 
-			if (attacker != victim)
+			if (attacker != victim && !attacker.dead && !victim.dead)
 			{
 				if (!victim.stunned)
 				{
@@ -152,7 +214,8 @@ class PlayState extends FlxState
 
 	public function endBattle():Void
 	{
-		FlxG.sound.music.stop();
+		if (FlxG.sound.music != null && FlxG.sound.music.playing)
+			FlxG.sound.music.stop();
 
 		var winner:BaseCharacter = (player.dead ? enemy : player);
 
@@ -166,6 +229,49 @@ class PlayState extends FlxState
 		FlxTimer.wait(3, () ->
 		{
 			FlxG.cameras.fade(FlxColor.BLACK, 1, false, () -> FlxG.switchState(new MainMenu()));
+		});
+	}
+
+	function intro():Void
+	{
+		hud.visible = false;
+
+		FlxTween.tween(enemy, {x: FlxG.width / 2 + FlxG.width / 4 - enemy.width / 2}, 1, {
+			onUpdate: (_) ->
+			{
+				enemy.animation.play('walk');
+				@:privateAccess
+				enemy.updateAnimation(FlxG.elapsed);
+			},
+			onComplete: (_) ->
+			{
+				enemy.animation.play('idle');
+			}
+		});
+
+		FlxTween.tween(player, {x: FlxG.width / 4 - player.width / 2}, 1, {
+			onUpdate: (_) ->
+			{
+				player.animation.play('walk');
+				@:privateAccess
+				player.updateAnimation(FlxG.elapsed);
+			},
+			onComplete: (_) ->
+			{
+				player.animation.play('idle');
+			}
+		});
+
+		FlxG.camera.fade(FlxColor.BLACK, 0.5, true);
+		FlxTimer.wait(2, () ->
+		{
+			enemy.immovable = false;
+			enemy.active = true;
+
+			player.immovable = false;
+			player.active = true;
+
+			hud.visible = true;
 		});
 	}
 }

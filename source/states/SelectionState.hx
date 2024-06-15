@@ -9,7 +9,6 @@ import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.util.FlxColor;
 import haxe.Json;
 import objects.characters.CharacterBuild;
 import objects.ui.HabilityDescriptionBox;
@@ -17,6 +16,8 @@ import openfl.Assets;
 
 class SelectionState extends FlxState
 {
+	public static var habilitiesJSON:Map<String, Dynamic>;
+
 	private var habilityDescriptions:Map<String, String>;
 
 	private var levelText:FlxText;
@@ -32,6 +33,7 @@ class SelectionState extends FlxState
 	private function initDescriptions():Void
 	{
 		habilityDescriptions = new Map<String, String>();
+		habilitiesJSON = new Map<String, Dynamic>();
 
 		var finalDesc:String = '';
 
@@ -39,6 +41,8 @@ class SelectionState extends FlxState
 		{
 			var rawJson:String = Assets.getText('assets/data/$i.json');
 			var json:Dynamic = Json.parse(rawJson);
+
+			habilitiesJSON.set(json.codeName, json);
 
 			if (['spear', 'bottle', 'prism'].contains(i))
 			{
@@ -152,7 +156,11 @@ class SelectionState extends FlxState
 
 		play = new FlxButton(0, 0, 'Start', () ->
 		{
-			FlxG.switchState(new PlayState());
+			if (FlxG.sound.music != null && FlxG.sound.music.playing)
+				FlxG.sound.music.stop();
+
+			FlxG.switchState(new PlayState(build));
+			FlxG.sound.play('assets/sounds/confirm.mp3', 0.85).persist = true;
 		});
 		play.setGraphicSize(play.width * 2);
 		play.updateHitbox();
@@ -166,6 +174,7 @@ class SelectionState extends FlxState
 		var exit = new FlxButton(0, 0, 'Go back', () ->
 		{
 			FlxG.switchState(new MainMenu());
+			FlxG.sound.play('assets/sounds/exit.mp3', 0.3).persist = true;
 		});
 		exit.setGraphicSize(exit.width * 2);
 		exit.updateHitbox();
@@ -262,6 +271,8 @@ class SelectionState extends FlxState
 
 					trace('Current build: $build.');
 
+					FlxG.sound.play('assets/sounds/Coffee1.mp3', 0.3);
+
 					return;
 				}
 			}
@@ -295,6 +306,8 @@ class SelectionState extends FlxState
 		}
 
 		trace('Current build: $build.');
+
+		FlxG.sound.play('assets/sounds/Coffee2.mp3', 0.3);
 
 		for (member in outlines.members)
 		{

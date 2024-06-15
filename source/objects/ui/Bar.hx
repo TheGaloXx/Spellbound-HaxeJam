@@ -5,6 +5,9 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import objects.characters.BaseCharacter;
+import states.PlayState;
+import states.SelectionState;
 
 class Bar extends FlxSpriteGroup
 {
@@ -144,6 +147,19 @@ class Bar extends FlxSpriteGroup
 					members[i].setColorTransform(value, value, value);
 			});
 		}
+
+		final state:PlayState = PlayState.current;
+		final characterParent:BaseCharacter = (state.player.hudBar == this ? state.player : state.enemy);
+
+		if (newMagic >= SelectionState.habilitiesJSON.get(characterParent.build.super1).cost)
+			habilities[0].animation.play('on');
+		else
+			habilities[0].animation.play('off');
+
+		if (newMagic >= SelectionState.habilitiesJSON.get(characterParent.build.super2).cost)
+			habilities[1].animation.play('on');
+		else
+			habilities[1].animation.play('off');
 	}
 
 	override function destroy():Void

@@ -34,7 +34,7 @@ class StartScreen extends FlxState
 
 		FlxTimer.wait(1, () ->
 		{
-			FlxG.camera.fade(FlxColor.BLACK, 3, false, () -> FlxG.switchState(new MainMenu()));
+			FlxG.camera.fade(FlxColor.BLACK, 2.5, false, () -> FlxG.switchState(new MainMenu()));
 		});
 	}
 
