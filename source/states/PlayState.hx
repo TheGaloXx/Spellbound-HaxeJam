@@ -1,10 +1,13 @@
 package states;
 
+import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxPoint;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -153,8 +156,6 @@ class PlayState extends FlxState
 		add(barrier);
 		addHUD();
 		intro();
-
-		FlxG.sound.playMusic('assets/music/battle_theme.mp3', 0.2);
 	}
 
 	override public function update(elapsed:Float)
@@ -164,7 +165,7 @@ class PlayState extends FlxState
 		FlxG.collide(characters, colliders);
 
 		for (character in characters.members)
-			character.hudBar.camera.alpha = (character.overlaps(character.hudBar) ? 0.4 : 1);
+			character.hudBar.alpha = (character.overlaps(character.hudBar) ? 0.4 : 1);
 
 		FlxG.overlap(characters, projectilesManager, (victim:BaseCharacter, projectile:BaseProjectile) ->
 		{
@@ -176,7 +177,7 @@ class PlayState extends FlxState
 				{
 					attacker.magic += projectile.magicGain;
 
-					victim.magic += projectile.magicGain / 2;
+					victim.magic += projectile.magicGain / 3;
 					victim.hurt(projectile.damage, projectile);
 				}
 
@@ -224,8 +225,15 @@ class PlayState extends FlxState
 		winner.acceptInput = false;
 		winner.canMove = false;
 		winner.flipX = winner == enemy;
+		for (character in characters)
+			character.hudBar.active = false;
 
-		FlxTimer.wait(1, () -> winner.specialAnim('cheer', 9999));
+		FlxTimer.wait(1, () ->
+		{
+			winner.specialAnim('cheer', 9999);
+			if (winner == player)
+				FlxG.sound.play('assets/sounds/win.mp3', 0.5);
+		});
 		FlxTimer.wait(3, () ->
 		{
 			FlxG.cameras.fade(FlxColor.BLACK, 1, false, () -> FlxG.switchState(new MainMenu()));
@@ -263,7 +271,7 @@ class PlayState extends FlxState
 		});
 
 		FlxG.camera.fade(FlxColor.BLACK, 0.5, true);
-		FlxTimer.wait(2, () ->
+		FlxTimer.wait(1.5, () ->
 		{
 			enemy.immovable = false;
 			enemy.active = true;
@@ -272,6 +280,21 @@ class PlayState extends FlxState
 			player.active = true;
 
 			hud.visible = true;
+			FlxG.sound.playMusic('assets/music/battle_theme.mp3', 0.2);
 		});
+	}
+
+	public function onSuperThrown(character:BaseCharacter, isAI:Bool)
+	{
+		projectilesManager.killMembers();
+		player.active = false;
+		enemy.active = false;
+		hud.visible = false;
+
+		var point = new FlxObject(FlxG.width / 2, FlxG.height / 2);
+
+		FlxTween.tween(FlxG.camera, {zoom: Main.pixel_mult / 2}, 2, {ease: FlxEase.circInOut});
+		FlxTween.tween(point, {x: character.x + character.width / 2, y: character.y + character.height / 2}, 2, {ease: FlxEase.circInOut});
+		FlxG.camera.follow(point);
 	}
 }

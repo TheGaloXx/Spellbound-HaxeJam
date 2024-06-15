@@ -4,7 +4,7 @@ class IcePrism extends BaseProjectile
 {
 	public function new()
 	{
-		super('prism', 20, 1);
+		super('prism', 1);
 	}
 
 	public function setTarget(posX:Float, posY:Float, ?newAngle:Float):Void

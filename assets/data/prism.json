@@ -1,7 +1,7 @@
 {
     "title": "Ice Prism",
     "damage": "7 (each)",
-    "cooldown": 1.5,
+    "cooldown": 1.6,
     "description": "Summon three ice prisms that deal low damage and slow the opponent's movement speed.",
     "codeName": "prism"
 }

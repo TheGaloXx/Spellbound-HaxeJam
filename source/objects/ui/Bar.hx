@@ -120,6 +120,9 @@ class Bar extends FlxSpriteGroup
 
 	public function updateHealthBar(newHealth:Float):Void
 	{
+		if (!active)
+			return;
+
 		var rectWidth:Float = newHealth / 100 * healthBar.frameWidth;
 
 		healthRect.set(0, 0, rectWidth, healthBar.height);
@@ -132,6 +135,9 @@ class Bar extends FlxSpriteGroup
 
 	public function updateMagicBar(newMagic:Float):Void
 	{
+		if (!active)
+			return;
+
 		var rectHeight:Float = (100 - newMagic) / 100 * magicFill.frameHeight;
 
 		healthRect.set(0, 0, magicFill.width, rectHeight);
@@ -141,11 +147,8 @@ class Bar extends FlxSpriteGroup
 
 		if (newMagic >= 100)
 		{
-			FlxTween.num(255, 1, 0.5, {ease: FlxEase.backOut}, (value) ->
-			{
-				for (i in 0...3)
-					members[i].setColorTransform(value, value, value);
-			});
+			angle = 5 * (habilities[0].flipX ? -1 : 1);
+			FlxTween.tween(this, {angle: 0}, 0.1);
 		}
 
 		final state:PlayState = PlayState.current;

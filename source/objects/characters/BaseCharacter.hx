@@ -6,6 +6,7 @@ import flixel.effects.FlxFlicker;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import objects.attacks.BaseProjectile;
 import objects.attacks.Bottle;
@@ -13,6 +14,7 @@ import objects.attacks.IcePrism;
 import objects.attacks.Spear;
 import objects.ui.Bar;
 import states.PlayState;
+import states.SelectionState;
 
 using StringTools;
 
@@ -31,6 +33,11 @@ class BaseCharacter extends FlxSprite
 	public var magic(default, set):Float = 0;
 	public var hudBar:Bar;
 	public var dead:Bool = false;
+
+	public var cooldown:Float = 0;
+
+	private var maxCooldown:Float = 0;
+	private var cooldownBar:FlxSprite;
 
 	public var speed(get, default):Float;
 
@@ -62,6 +69,9 @@ class BaseCharacter extends FlxSprite
 		updateHitbox();
 
 		timer = new FlxTimer();
+		cooldownBar = new FlxSprite().makeGraphic(1, 1, FlxColor.GRAY);
+		cooldownBar.alpha = 0.7;
+		cooldownBar.scale.y = 20;
 	}
 
 	override function update(elapsed:Float):Void
@@ -69,6 +79,28 @@ class BaseCharacter extends FlxSprite
 		super.update(elapsed);
 
 		magic += elapsed;
+		if (cooldown > 0)
+		{
+			cooldown -= elapsed;
+			cooldownBar.scale.x = (cooldown / maxCooldown) * this.width * 0.8;
+			cooldownBar.updateHitbox();
+			cooldownBar.setPosition(this.x + (this.width - this.width * 0.8) / 2, this.y - cooldownBar.height - 10);
+		}
+		else
+			cooldown = 0;
+	}
+
+	override function draw():Void
+	{
+		super.draw();
+		if (cooldown > 0)
+			cooldownBar.draw();
+	}
+
+	override function destroy():Void
+	{
+		super.destroy();
+		cooldownBar.destroy();
 	}
 
 	private function playAnim(name:String, force:Bool = false, frame:Int = 0):Void
@@ -123,6 +155,8 @@ class BaseCharacter extends FlxSprite
 
 			return;
 		}
+		else
+			FlxG.sound.play('assets/sounds/hurt.mp3', 0.5);
 
 		FlxTween.shake(this, 0.05, 0.5, XY, {
 			onComplete: (_) ->
@@ -138,6 +172,12 @@ class BaseCharacter extends FlxSprite
 
 	public function throwAttack(primary1:Bool, targetX:Float, targetY:Float):Void
 	{
+		if (cooldown > 0)
+		{
+			FlxG.sound.play('assets/sounds/error.mp3', 0.4).pitch = 0.8;
+			return;
+		}
+
 		specialAnim('attack');
 
 		var type:String = (primary1 ? build.primary1 : build.primary2);
@@ -149,11 +189,15 @@ class BaseCharacter extends FlxSprite
 				spear.init(this.x + (this.width - spear.width) / 2, this.y + (this.height - spear.height) / 2);
 				spear.setTarget(targetX, targetY);
 				spear.parent = this;
+
+				FlxG.sound.play('assets/sounds/throw.mp3', 0.5);
 			case 'bottle':
 				var bottle:Bottle = cast PlayState.current.projectilesManager.getNewProjectile('bottle');
 				bottle.init(this.x + (this.width - bottle.width) / 2, this.y + (this.height - bottle.height) / 2);
 				bottle.setTarget(targetX, targetY);
 				bottle.parent = this;
+
+				FlxG.sound.play('assets/sounds/throw.mp3', 0.5);
 			case 'prism':
 				var firstAngle:Float = 361;
 				for (i in 0...3)
@@ -172,9 +216,20 @@ class BaseCharacter extends FlxSprite
 						prism.setTarget(0, 0, firstAngle + 20 * (i == 1 ? -1 : 1));
 					}
 				}
+
+				FlxG.sound.play('assets/sounds/prism.mp3', 0.3);
 		}
 
+		setCooldown(Std.parseFloat(SelectionState.habilitiesJSON.get(type).cooldown));
 		flipX = targetX < this.x + this.width / 2;
+	}
+
+	public function throwSuper():Void
+	{
+		flipX = (Std.isOfType(this, Player) ? false : true);
+		specialAnim('cast', 99999999);
+
+		PlayState.current.onSuperThrown(this, flipX);
 	}
 
 	function set_health(value:Float):Float
@@ -201,5 +256,16 @@ class BaseCharacter extends FlxSprite
 		hudBar.updateMagicBar(magic);
 
 		return magic;
+	}
+
+	public function setCooldown(value:Float):Float
+	{
+		if (value < 0)
+			value = 0;
+
+		cooldown = value;
+		maxCooldown = value;
+
+		return cooldown;
 	}
 }

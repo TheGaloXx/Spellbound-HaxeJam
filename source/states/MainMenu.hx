@@ -59,7 +59,7 @@ class MainMenu extends FlxState
 		credits.updateHitbox();
 		credits.label.setGraphicSize(credits.label.width * 2);
 		credits.label.updateHitbox();
-		credits.y = FlxG.height - credits.height - 50;
+		credits.y = FlxG.height - credits.height - 30;
 		add(credits);
 
 		if (!alreadyTyped)

@@ -88,11 +88,11 @@ class Enemy extends BaseCharacter
 				playAnim('idle');
 		}
 
-		if (acceptInput)
+		if (acceptInput && cooldown <= 0)
 		{
 			attackTimer += elapsed;
 
-			if (attackTimer > moveFrequency * 1.25)
+			if (attackTimer > moveFrequency * 1.1)
 			{
 				attackTimer = 0;
 

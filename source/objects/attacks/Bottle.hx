@@ -13,7 +13,7 @@ class Bottle extends BaseProjectile
 
 	public function new()
 	{
-		super('bottle', 30, 0.7);
+		super('bottle', 0.7);
 	}
 
 	override public function init(posX:Float, posY:Float):Void
@@ -76,6 +76,8 @@ class Bottle extends BaseProjectile
 			var splash:BottleSplash = cast manager.getNewParticle('bottle');
 			splash.init(this.x + (this.width - splash.width) / 2, this.y + (this.height - splash.height) / 2);
 			splash.color = [0x14a02e, 0xb4202a, 0x249fde][this.animation.curAnim.curFrame];
+
+			FlxG.sound.play('assets/sounds/bottle_crash.mp3', 0.5);
 		}
 	}
 }

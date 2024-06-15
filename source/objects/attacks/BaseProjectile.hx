@@ -2,6 +2,7 @@ package objects.attacks;
 
 import flixel.FlxSprite;
 import objects.characters.BaseCharacter;
+import states.SelectionState;
 
 class BaseProjectile extends FlxSprite
 {
@@ -12,14 +13,13 @@ class BaseProjectile extends FlxSprite
 	public var type:String;
 	public var parent:BaseCharacter;
 	public var damage:Float;
-	public var magicGain:Float = 15;
+	public var magicGain:Float = 10;
 
-	public function new(type:String, damage:Float, size:Float = 1)
+	public function new(type:String, size:Float = 1)
 	{
 		super();
 
 		this.type = type;
-		this.damage = damage;
 		this.size = size;
 
 		loadGraphic('assets/images/attacks.png', true, 16, 16);
@@ -30,6 +30,8 @@ class BaseProjectile extends FlxSprite
 
 		setGraphicSize(frameSize * Main.pixel_mult);
 		updateHitbox();
+
+		damage = Std.parseFloat(SelectionState.habilitiesJSON.get(type).damage);
 	}
 
 	public function init(posX:Float, posY:Float):Void

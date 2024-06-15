@@ -38,7 +38,7 @@ class Player extends BaseCharacter
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
-			specialAnim('cheer', 1);
+			throwSuper();
 		}
 	}
 

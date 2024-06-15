@@ -25,7 +25,8 @@ class CreditsSubState extends FlxSubState
 			+ 'Programming & music - TheGalo X\nArtwork & music - GlassGuy_\n\n\n'
 			+ 'SFX:\n\n'
 			+ 'Universal UI Soundpack\nCreated and distributed by Nathan Gibson\n(nathangibson.myportfolio.com)\nCreation date: 27/9/2021\n\n'
-			+ 'Retro Falling Down SFX\n(pixabay.com/sound-effects/retro-falling-down-sfx-85575)';
+			+ 'Retro Falling Down SFX\n(pixabay.com/sound-effects/retro-falling-down-sfx-85575)\n\n'
+			+ 'MIXKIT\n(mixkit.co/free-sound-effects/game)';
 
 		var text = new FlxText(0, 0, FlxG.width, credits, 26);
 		text.active = false;

@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.sound.FlxSound;
+import lime.app.Application;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
@@ -36,6 +37,9 @@ class Main extends Sprite
 		#if debug
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onReset);
 		#end
+
+		// Thanks to my friend Sanco for this code!!! (it prevents the context menu from popping up when right clicking)
+		js.Syntax.code("document.addEventListener('contextmenu', (ev) => { ev.preventDefault(); })");
 	}
 
 	function onReset(key:KeyboardEvent):Void
