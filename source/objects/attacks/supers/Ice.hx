@@ -30,7 +30,7 @@ class Ice extends BaseProjectile
 	{
 		super.update(elapsed);
 
-		target.health -= elapsed * 2;
+		target.health -= elapsed * damage;
 	}
 
 	public function setTarget(target:BaseCharacter):Void
@@ -42,7 +42,6 @@ class Ice extends BaseProjectile
 
 		alpha = 0.35;
 
-		FlxG.camera.flash(FlxColor.WHITE, 0.1);
 		FlxG.sound.play('assets/sounds/win.mp3', 0.5).pitch = 0.5;
 	}
 }

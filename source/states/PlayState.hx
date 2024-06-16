@@ -39,6 +39,7 @@ class PlayState extends FlxState
 	public var projectilesManager:ProjectileManager;
 	public var particlesManager:ParticleManager;
 	public var build:CharacterBuild;
+	public var lastSuperTime:Float = 0;
 
 	override public function new(build:CharacterBuild)
 	{
@@ -160,6 +161,8 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
+		lastSuperTime += elapsed;
+
 		super.update(elapsed);
 
 		FlxG.collide(characters, colliders);
@@ -167,47 +170,7 @@ class PlayState extends FlxState
 		for (character in characters.members)
 			character.hudBar.alpha = (character.overlaps(character.hudBar) ? 0.4 : 1);
 
-		FlxG.overlap(characters, projectilesManager, (victim:BaseCharacter, projectile:BaseProjectile) ->
-		{
-			final attacker:BaseCharacter = projectile.parent;
-
-			if (attacker != victim && !attacker.dead && !victim.dead)
-			{
-				if (projectile.type != 'ice')
-				{
-					if (!victim.stunned)
-					{
-						attacker.magic += projectile.magicGain;
-
-						victim.magic += projectile.magicGain / 3;
-						victim.hurt(projectile.damage, projectile);
-						if (victim == player)
-							FlxG.camera.shake(0.005, 0.1);
-					}
-
-					projectile.kill();
-
-					switch (projectile.type)
-					{
-						case 'spear':
-							var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
-							sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
-						case 'prism':
-							if (!victim.stunned && victim.speed_mult == 1)
-							{
-								victim.color = 0xff5bbbff;
-								victim.speed_mult = 0.4;
-
-								FlxTimer.wait(1, () ->
-								{
-									victim.color = 0xffffffff;
-									victim.speed_mult = 1;
-								});
-							}
-					}
-				}
-			}
-		});
+		FlxG.overlap(characters, projectilesManager, handleProjectiles);
 	}
 
 	override function destroy():Void
@@ -323,6 +286,9 @@ class PlayState extends FlxState
 				enemy.active = true;
 				hud.visible = true;
 
+				character.acceptInput = true;
+				character.canMove = true;
+
 				if (superSubstate.successfull && superSubstate.type != null)
 				{
 					character.throwSuper(false, superSubstate.type, (character == player ? enemy : player));
@@ -333,6 +299,56 @@ class PlayState extends FlxState
 					character.magic = character.magic / 4;
 				}
 			});
+		}
+	}
+
+	private function handleProjectiles(victim:BaseCharacter, projectile:BaseProjectile):Void
+	{
+		if (projectile.type == 'ice')
+			return;
+
+		final attacker:BaseCharacter = projectile.parent;
+
+		if (attacker != victim && !attacker.dead && !victim.dead)
+		{
+			if (projectile.type == 'light')
+			{
+				victim.magic += projectile.magicGain * FlxG.elapsed;
+				victim.health -= FlxG.elapsed * projectile.damage;
+
+				return;
+			}
+
+			if (!victim.stunned)
+			{
+				attacker.magic += projectile.magicGain;
+
+				victim.magic += projectile.magicGain / 3;
+				victim.hurt(projectile.damage, projectile);
+				if (victim == player)
+					FlxG.camera.shake(0.005, 0.1);
+			}
+
+			projectile.kill();
+
+			switch (projectile.type)
+			{
+				case 'spear':
+					var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
+					sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
+				case 'prism':
+					if (!victim.stunned && victim.speed_mult == 1)
+					{
+						victim.color = 0xff5bbbff;
+						victim.speed_mult = 0.4;
+
+						FlxTimer.wait(1, () ->
+						{
+							victim.color = 0xffffffff;
+							victim.speed_mult = 1;
+						});
+					}
+			}
 		}
 	}
 }

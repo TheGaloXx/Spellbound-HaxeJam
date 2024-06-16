@@ -1,7 +1,7 @@
 {
     "title": "Light Nova",
-    "damage": "20 (per second)",
-    "cost": 75,
+    "damage": "25 (per second)",
+    "cost": 65,
     "duration": "(undefined)",
     "description": "Summon a big light ball that moves at low speed and deals constant damage if in contact with the opponent.",
     "codeName": "light"

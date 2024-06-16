@@ -13,6 +13,7 @@ import objects.attacks.Bottle;
 import objects.attacks.IcePrism;
 import objects.attacks.Spear;
 import objects.attacks.supers.Ice;
+import objects.attacks.supers.LightBall;
 import objects.ui.Bar;
 import states.PlayState;
 import states.SelectionState;
@@ -173,7 +174,7 @@ class BaseCharacter extends FlxSprite
 
 	public function throwAttack(primary1:Bool, targetX:Float, targetY:Float):Void
 	{
-		if (dead)
+		if (dead || !acceptInput)
 			return;
 
 		if (cooldown > 0)
@@ -230,7 +231,7 @@ class BaseCharacter extends FlxSprite
 
 	public function throwSuper(init:Bool = true, ?type:String, ?target:BaseCharacter):Void
 	{
-		if (dead)
+		if (dead || !acceptInput || PlayState.current.lastSuperTime < 12.5)
 			return;
 
 		if (init)
@@ -243,6 +244,8 @@ class BaseCharacter extends FlxSprite
 		}
 		else
 		{
+			PlayState.current.lastSuperTime = 0;
+
 			specialAnim('attack');
 
 			trace(type);
@@ -255,7 +258,15 @@ class BaseCharacter extends FlxSprite
 					ice.init(0, 0);
 					ice.setTarget(target);
 					ice.parent = this;
+				case 'light' | 'light nova':
+					var ball:LightBall = cast PlayState.current.projectilesManager.getNewProjectile('light');
+					ball.init(this.x + this.width / 2, 0);
+					ball.velocity.x = ball.speed * (flipX ? -1 : 1);
+					ball.flipX = flipX;
+					ball.parent = this;
 			}
+
+			FlxG.camera.flash(FlxColor.WHITE, 0.1);
 		}
 	}
 

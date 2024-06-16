@@ -20,7 +20,7 @@ class SuperSubState extends FlxSubState
 	private var point:FlxObject;
 	private var timeText:FlxText;
 	private var spellText:FlxText;
-	private var time:Float = 60;
+	private var time:Float = 10;
 	private var availableAttacks:Array<String> = [];
 	private var transitioning:Bool = false;
 	private var isAI:Bool;
