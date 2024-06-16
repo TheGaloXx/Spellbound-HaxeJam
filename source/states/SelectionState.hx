@@ -8,6 +8,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import haxe.Json;
 import objects.characters.CharacterBuild;
@@ -27,6 +28,7 @@ class SelectionState extends FlxState
 	private var build:CharacterBuild;
 	private var descBox:HabilityDescriptionBox;
 	private var play:FlxButton;
+	private var tutorial:FlxSprite;
 
 	public static var curLevel:Int = 5;
 
@@ -159,7 +161,7 @@ class SelectionState extends FlxState
 		text.active = false;
 		add(text);
 
-		var text = new FlxText(0, 0, 0, 'Super attacks (up to 2)', 16);
+		var text = new FlxText(0, 0, 0, 'Spells (up to 2)', 16);
 		text.setPosition(portraits.x + (portraits.width - text.width) / 2, portraits.y + portraits.height + 10);
 		text.active = false;
 		add(text);
@@ -172,11 +174,14 @@ class SelectionState extends FlxState
 
 		play = new FlxButton(0, 0, 'Start', () ->
 		{
-			if (FlxG.sound.music != null && FlxG.sound.music.playing)
-				FlxG.sound.music.stop();
+			if (acceptInput())
+			{
+				if (FlxG.sound.music != null && FlxG.sound.music.playing)
+					FlxG.sound.music.stop();
 
-			FlxG.switchState(new PlayState(build));
-			FlxG.sound.play('assets/sounds/confirm.mp3', 0.85).persist = true;
+				FlxG.switchState(new PlayState(build));
+				FlxG.sound.play('assets/sounds/confirm.mp3', 0.85).persist = true;
+			}
 		});
 		play.setGraphicSize(play.width * 2);
 		play.updateHitbox();
@@ -189,8 +194,11 @@ class SelectionState extends FlxState
 
 		var exit = new FlxButton(0, 0, 'Go back', () ->
 		{
-			FlxG.switchState(new MainMenu());
-			FlxG.sound.play('assets/sounds/exit.mp3', 0.3).persist = true;
+			if (acceptInput())
+			{
+				FlxG.switchState(new MainMenu());
+				FlxG.sound.play('assets/sounds/exit.mp3', 0.3).persist = true;
+			}
 		});
 		exit.setGraphicSize(exit.width * 2);
 		exit.updateHitbox();
@@ -203,10 +211,36 @@ class SelectionState extends FlxState
 		add(descBox);
 
 		build = new CharacterBuild();
+
+		var tutorialButton = new FlxButton(0, 0, 'Tutorial', toggleTutorial);
+		tutorialButton.setGraphicSize(tutorialButton.width * 2);
+		tutorialButton.updateHitbox();
+		tutorialButton.label.setGraphicSize(tutorialButton.label.width * 2);
+		tutorialButton.label.updateHitbox();
+		tutorialButton.setPosition(exit.x - tutorialButton.width - 20, exit.y);
+		add(tutorialButton);
+
+		tutorial = new FlxSprite().loadGraphic('assets/images/menu/tutorial.png');
+		tutorial.active = false;
+		tutorial.alpha = 0;
+		tutorial.visible = false;
+		tutorial.screenCenter();
+		add(tutorial);
+
+		if (FlxG.save.data.seenTutorial == null || FlxG.save.data.seenTutorial == false)
+		{
+			FlxG.save.data.seenTutorial = true;
+			FlxG.save.flush();
+
+			toggleTutorial();
+		}
 	}
 
 	function increaseAIlevel(spr:FlxSprite):Void
 	{
+		if (!acceptInput())
+			return;
+
 		curLevel++;
 
 		if (curLevel > 10)
@@ -218,6 +252,14 @@ class SelectionState extends FlxState
 	override function update(elapsed:Float):Void
 	{
 		descBox.visible = false;
+
+		if (!acceptInput())
+		{
+			if (tutorial.alpha == 1
+				&& tutorial.visible
+				&& (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE, SPACE]) || FlxG.mouse.justPressed))
+				toggleTutorial();
+		}
 
 		var found:BoxOutline = null;
 		if (FlxG.mouse.overlaps(portraits))
@@ -332,6 +374,27 @@ class SelectionState extends FlxState
 				member.kill();
 		}
 	}
+
+	function toggleTutorial():Void
+	{
+		if (!tutorial.visible)
+		{
+			FlxG.sound.play('assets/sounds/confirm.mp3', 0.7);
+			tutorial.visible = true;
+			FlxTween.cancelTweensOf(tutorial, ['alpha']);
+			tutorial.alpha = 0;
+			FlxTween.tween(tutorial, {alpha: 1}, 0.5);
+		}
+		else
+		{
+			FlxG.sound.play('assets/sounds/exit.mp3', 0.3);
+			FlxTween.cancelTweensOf(tutorial, ['alpha']);
+			FlxTween.tween(tutorial, {alpha: 0}, 0.25, {onComplete: (_) -> tutorial.visible = false});
+		}
+	}
+
+	inline function acceptInput():Bool
+		return !tutorial.visible;
 }
 
 private class BoxOutline extends FlxSprite
