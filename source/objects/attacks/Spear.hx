@@ -4,7 +4,7 @@ class Spear extends BaseProjectile
 {
 	public function new()
 	{
-		super('spear', 0.8);
+		super('spear', 1400, 0.8);
 	}
 
 	public function setTarget(posX:Float, posY:Float):Void
@@ -13,8 +13,8 @@ class Spear extends BaseProjectile
 		var dy:Float = posY - y - height / 2;
 		var distance:Float = Math.sqrt(dx * dx + dy * dy);
 
-		velocity.x = 1500 * (dx / distance);
-		velocity.y = 1500 * (dy / distance);
+		velocity.x = speed * (dx / distance);
+		velocity.y = speed * (dy / distance);
 
 		angle = Math.atan2(dy, dx) * 180 / Math.PI;
 	}

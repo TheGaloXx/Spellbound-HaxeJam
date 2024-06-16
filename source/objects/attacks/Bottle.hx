@@ -13,7 +13,7 @@ class Bottle extends BaseProjectile
 
 	public function new()
 	{
-		super('bottle', 0.7);
+		super('bottle', 700, 0.7);
 	}
 
 	override public function init(posX:Float, posY:Float):Void
@@ -54,7 +54,7 @@ class Bottle extends BaseProjectile
 		target.set(tarX, tarY);
 
 		var distance:Float = FlxMath.distanceToPoint(this, target);
-		totalTime = distance / 700;
+		totalTime = distance / speed;
 		time = 0;
 		curveSize = distance / 4;
 	}

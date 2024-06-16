@@ -1,8 +1,8 @@
 {
     "title": "Glacial Prison",
-    "damage": 0,
+    "damage": "2 (per second)",
     "cost": 100,
-    "duration": 6,
-    "description": "Freezes the opponent completely, at the cost of all of your magic.",
+    "duration": 10,
+    "description": "Freezes the opponent completely while dealing constant damage, at the cost of all of your magic.",
     "codeName": "ice"
 }

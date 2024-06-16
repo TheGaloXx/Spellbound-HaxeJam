@@ -12,6 +12,7 @@ import objects.attacks.BaseProjectile;
 import objects.attacks.Bottle;
 import objects.attacks.IcePrism;
 import objects.attacks.Spear;
+import objects.attacks.supers.Ice;
 import objects.ui.Bar;
 import states.PlayState;
 import states.SelectionState;
@@ -129,7 +130,7 @@ class BaseCharacter extends FlxSprite
 
 	public function hurt(damage:Float, projectile:BaseProjectile):Void
 	{
-		if (stunned)
+		if (stunned || dead)
 			return;
 
 		health -= damage;
@@ -172,6 +173,9 @@ class BaseCharacter extends FlxSprite
 
 	public function throwAttack(primary1:Bool, targetX:Float, targetY:Float):Void
 	{
+		if (dead)
+			return;
+
 		if (cooldown > 0)
 		{
 			FlxG.sound.play('assets/sounds/error.mp3', 0.4).pitch = 0.8;
@@ -224,12 +228,35 @@ class BaseCharacter extends FlxSprite
 		flipX = targetX < this.x + this.width / 2;
 	}
 
-	public function throwSuper():Void
+	public function throwSuper(init:Bool = true, ?type:String, ?target:BaseCharacter):Void
 	{
-		flipX = (Std.isOfType(this, Player) ? false : true);
-		specialAnim('cast', 99999999);
+		if (dead)
+			return;
 
-		PlayState.current.onSuperThrown(this, flipX);
+		if (init)
+		{
+			flipX = (Std.isOfType(this, Player) ? false : true);
+			specialAnim('cast', 99999999);
+
+			visible = true;
+			PlayState.current.onSuperThrown(this, flipX);
+		}
+		else
+		{
+			specialAnim('attack');
+
+			trace(type);
+			magic -= Std.parseFloat(SelectionState.habilitiesJSON.get(SelectionState.codeFromSuper(type)).cost);
+
+			switch (type)
+			{
+				case 'ice' | 'glacial prison':
+					var ice:Ice = cast PlayState.current.projectilesManager.getNewProjectile('ice');
+					ice.init(0, 0);
+					ice.setTarget(target);
+					ice.parent = this;
+			}
+		}
 	}
 
 	function set_health(value:Float):Float
@@ -267,5 +294,37 @@ class BaseCharacter extends FlxSprite
 		maxCooldown = value;
 
 		return cooldown;
+	}
+
+	public function freeze(duration:Float):Void
+	{
+		if (dead)
+			return;
+
+		timer.cancel();
+
+		playAnim('hurt');
+		speed_mult = 0;
+		acceptInput = false;
+		canMove = false;
+		setCooldown(0);
+		stunned = true;
+		active = false;
+		color = 0xff5bbbff;
+
+		timer.start(duration, (_) ->
+		{
+			speed_mult = 1;
+			acceptInput = true;
+			canMove = true;
+			stunned = false;
+			active = true;
+			color = 0xffffffff;
+		});
+	}
+
+	public inline function canUseSuper():Bool
+	{
+		return (hudBar.habilities[0].animation.curAnim.name == 'on' || hudBar.habilities[1].animation.curAnim.name == 'on');
 	}
 }

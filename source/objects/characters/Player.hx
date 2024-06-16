@@ -36,7 +36,7 @@ class Player extends BaseCharacter
 			}
 		}
 
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxG.keys.justPressed.SPACE && canUseSuper())
 		{
 			throwSuper();
 		}

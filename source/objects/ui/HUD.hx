@@ -26,7 +26,7 @@ class HUD extends FlxGroup
 		add(playerStats);
 
 		enemyStats = new Bar(true);
-		enemyStats.x = FlxG.width - 50 - enemyStats.width;
+		enemyStats.x = FlxG.width - 21 - enemyStats.width;
 		enemyStats.y = FlxG.height - 20 - enemyStats.height;
 		enemyStats.camera = cam;
 		add(enemyStats);

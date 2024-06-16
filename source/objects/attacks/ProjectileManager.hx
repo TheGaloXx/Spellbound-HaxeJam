@@ -2,6 +2,7 @@ package objects.attacks;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.util.FlxSort;
+import objects.attacks.supers.Ice;
 
 class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 {
@@ -9,7 +10,7 @@ class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 	{
 		super();
 
-		for (type in ['spear', 'bottle', 'prism'])
+		for (type in ['spear', 'bottle', 'prism', 'ice'])
 		{
 			getNewProjectile(type).kill(); // spawn at least one of each so it doesnt lag the first time you generate them
 		}
@@ -47,6 +48,8 @@ class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 					new Bottle();
 				case 'prism':
 					new IcePrism();
+				case 'ice':
+					new Ice();
 				default:
 					new Spear();
 			}

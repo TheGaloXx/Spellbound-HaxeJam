@@ -173,33 +173,38 @@ class PlayState extends FlxState
 
 			if (attacker != victim && !attacker.dead && !victim.dead)
 			{
-				if (!victim.stunned)
+				if (projectile.type != 'ice')
 				{
-					attacker.magic += projectile.magicGain;
+					if (!victim.stunned)
+					{
+						attacker.magic += projectile.magicGain;
 
-					victim.magic += projectile.magicGain / 3;
-					victim.hurt(projectile.damage, projectile);
-				}
+						victim.magic += projectile.magicGain / 3;
+						victim.hurt(projectile.damage, projectile);
+						if (victim == player)
+							FlxG.camera.shake(0.005, 0.1);
+					}
 
-				projectile.kill();
+					projectile.kill();
 
-				switch (projectile.type)
-				{
-					case 'spear':
-						var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
-						sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
-					case 'prism':
-						if (!victim.stunned && victim.speed_mult == 1)
-						{
-							victim.color = 0xff5bbbff;
-							victim.speed_mult = 0.4;
-
-							FlxTimer.wait(1, () ->
+					switch (projectile.type)
+					{
+						case 'spear':
+							var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
+							sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
+						case 'prism':
+							if (!victim.stunned && victim.speed_mult == 1)
 							{
-								victim.color = 0xffffffff;
-								victim.speed_mult = 1;
-							});
-						}
+								victim.color = 0xff5bbbff;
+								victim.speed_mult = 0.4;
+
+								FlxTimer.wait(1, () ->
+								{
+									victim.color = 0xffffffff;
+									victim.speed_mult = 1;
+								});
+							}
+					}
 				}
 			}
 		});
@@ -296,5 +301,38 @@ class PlayState extends FlxState
 		FlxTween.tween(FlxG.camera, {zoom: Main.pixel_mult / 2}, 2, {ease: FlxEase.circInOut});
 		FlxTween.tween(point, {x: character.x + character.width / 2, y: character.y + character.height / 2}, 2, {ease: FlxEase.circInOut});
 		FlxG.camera.follow(point);
+
+		var superSubstate:SuperSubState = new SuperSubState(character, point, isAI);
+		FlxTimer.wait(2, () ->
+		{
+			openSubState(superSubstate);
+		});
+
+		// when finished casting the spell
+		superSubstate.closeCallback = () ->
+		{
+			FlxTween.tween(FlxG.camera, {zoom: 1}, 1, {ease: FlxEase.circInOut});
+			FlxTween.tween(point, {x: FlxG.width / 2, y: FlxG.height / 2}, 1, {ease: FlxEase.circInOut});
+
+			FlxTimer.wait(1, () ->
+			{
+				FlxG.camera.follow(null);
+				point.destroy();
+
+				player.active = true;
+				enemy.active = true;
+				hud.visible = true;
+
+				if (superSubstate.successfull && superSubstate.type != null)
+				{
+					character.throwSuper(false, superSubstate.type, (character == player ? enemy : player));
+				}
+				else
+				{
+					character.specialAnim('hurt');
+					character.magic = character.magic / 4;
+				}
+			});
+		}
 	}
 }

@@ -4,7 +4,7 @@ class IcePrism extends BaseProjectile
 {
 	public function new()
 	{
-		super('prism', 1);
+		super('prism', 900, 1);
 	}
 
 	public function setTarget(posX:Float, posY:Float, ?newAngle:Float):Void
@@ -12,8 +12,8 @@ class IcePrism extends BaseProjectile
 		if (newAngle != null)
 		{
 			var radians:Float = newAngle * Math.PI / 180;
-			velocity.x = 1000 * Math.cos(radians);
-			velocity.y = 1000 * Math.sin(radians);
+			velocity.x = speed * Math.cos(radians);
+			velocity.y = speed * Math.sin(radians);
 
 			angle = newAngle;
 		}
@@ -23,8 +23,8 @@ class IcePrism extends BaseProjectile
 			var dy:Float = posY - y - height / 2;
 			var distance:Float = Math.sqrt(dx * dx + dy * dy);
 
-			velocity.x = 1000 * (dx / distance);
-			velocity.y = 1000 * (dy / distance);
+			velocity.x = speed * (dx / distance);
+			velocity.y = speed * (dy / distance);
 
 			angle = Math.atan2(dy, dx) * 180 / Math.PI;
 		}

@@ -14,18 +14,21 @@ class BaseProjectile extends FlxSprite
 	public var parent:BaseCharacter;
 	public var damage:Float;
 	public var magicGain:Float = 10;
+	public var speed:Float;
 
-	public function new(type:String, size:Float = 1)
+	public function new(type:String, speed:Float, size:Float = 1)
 	{
 		super();
 
 		this.type = type;
+		this.speed = speed;
 		this.size = size;
 
 		loadGraphic('assets/images/attacks.png', true, 16, 16);
 		animation.add('bottle', [1, 3, 7], 0, false);
 		animation.add('spear', [8], 0, false);
 		animation.add('prism', [9], 0, false);
+		animation.add('ice', [2], 0, false);
 		animation.play(type);
 
 		setGraphicSize(frameSize * Main.pixel_mult);

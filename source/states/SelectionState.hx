@@ -28,7 +28,7 @@ class SelectionState extends FlxState
 	private var descBox:HabilityDescriptionBox;
 	private var play:FlxButton;
 
-	public static var curLevel:Int = 3;
+	public static var curLevel:Int = 5;
 
 	private function initDescriptions():Void
 	{
@@ -55,6 +55,22 @@ class SelectionState extends FlxState
 
 			habilityDescriptions.set(json.codeName, finalDesc);
 		}
+	}
+
+	public static inline function codeFromSuper(superTitle:String, toLowerCase:Bool = true):String
+	{
+		var codeName:String = null;
+
+		for (key => i in habilitiesJSON)
+		{
+			if (i.title.toLowerCase() == superTitle)
+			{
+				codeName = key;
+				break;
+			}
+		}
+
+		return codeName;
 	}
 
 	override function create():Void

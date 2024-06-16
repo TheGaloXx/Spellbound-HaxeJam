@@ -102,6 +102,9 @@ class Enemy extends BaseCharacter
 			}
 		}
 
+		if (canUseSuper() && FlxG.random.bool(0.05 * AI_level))
+			throwSuper();
+
 		super.update(elapsed);
 
 		FlxG.watch.addQuick('AI:', this);
