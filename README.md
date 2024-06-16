@@ -1,3 +1,5 @@
+Play it on Itch.io!: https://thegalo-x.itch.io/spellbound
+
 # Spellbound - HaxeJam
     Game made for the HaxeJam 2024: Summer Jam. 
     Theme: Spellcraft.
