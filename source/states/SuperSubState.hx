@@ -2,9 +2,11 @@ package states;
 
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.input.keyboard.FlxKey;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import objects.characters.BaseCharacter;
@@ -40,6 +42,17 @@ class SuperSubState extends FlxSubState
 	override function create():Void
 	{
 		super.create();
+
+		if (!isAI)
+		{
+			var bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+			bg.alpha = 0.4;
+			bg.scale.set(FlxG.width, FlxG.height);
+			bg.updateHitbox();
+			bg.setPosition(point.x - bg.width / 2, point.y - bg.height / 2);
+			bg.active = false;
+			add(bg);
+		}
 
 		character.specialAnim('cast', 9999);
 
@@ -183,7 +196,7 @@ class SuperSubState extends FlxSubState
 			return;
 		}
 
-		if (curCode.length >= 30 || (curCode.length <= 0 && key == SPACE))
+		if (curCode.length >= 30 || (curCode.length <= 0 && key == SPACE) || (curCode[curCode.length - 1] == SPACE && key == SPACE))
 		{
 			FlxG.sound.play('assets/sounds/error.mp3', 0.5);
 			return;

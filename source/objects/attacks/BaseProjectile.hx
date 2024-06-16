@@ -30,6 +30,7 @@ class BaseProjectile extends FlxSprite
 		animation.add('prism', [9], 0, false);
 		animation.add('ice', [2], 0, false);
 		animation.add('light', [12, 13, 14, 15, 16, 17], 12, true);
+		animation.add('fire', [0, 6], 12, true);
 		animation.play(type);
 
 		setGraphicSize(frameSize * Main.pixel_mult);

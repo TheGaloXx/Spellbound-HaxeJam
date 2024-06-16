@@ -9,7 +9,7 @@ class ParticleManager extends FlxTypedContainer<BaseParticle>
 	{
 		super();
 
-		for (type in ['bottle', 'sparks'])
+		for (type in ['bottle', 'sparks', 'explosion'])
 		{
 			getNewParticle(type).kill(); // spawn at least one of each so it doesnt lag the first time you generate them
 		}
@@ -45,6 +45,8 @@ class ParticleManager extends FlxTypedContainer<BaseParticle>
 					new BottleSplash();
 				case 'sparks':
 					new Sparks();
+				case 'explosion':
+					new Explosion();
 				default:
 					new BottleSplash();
 			}

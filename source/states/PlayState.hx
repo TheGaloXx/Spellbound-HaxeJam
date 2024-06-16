@@ -10,11 +10,13 @@ import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import objects.*;
 import objects.attacks.BaseProjectile;
 import objects.attacks.ProjectileManager;
 import objects.characters.*;
+import objects.particles.Explosion;
 import objects.particles.ParticlesManager.ParticleManager;
 import objects.particles.Sparks;
 import objects.ui.*;
@@ -39,7 +41,7 @@ class PlayState extends FlxState
 	public var projectilesManager:ProjectileManager;
 	public var particlesManager:ParticleManager;
 	public var build:CharacterBuild;
-	public var lastSuperTime:Float = 0;
+	public var lastSuperTime:Float = 15;
 
 	override public function new(build:CharacterBuild)
 	{
@@ -162,6 +164,12 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		lastSuperTime += elapsed;
+		final timeLeft:Float = 15 - lastSuperTime;
+		if (timeLeft > 0)
+			hud.timer.text = 'Supers enabled in: ' + FlxStringUtil.formatTime(timeLeft, false);
+		else
+			hud.timer.visible = false;
+		FlxG.watch.addQuick('time super', lastSuperTime);
 
 		super.update(elapsed);
 
@@ -186,8 +194,9 @@ class PlayState extends FlxState
 		if (FlxG.sound.music != null && FlxG.sound.music.playing)
 			FlxG.sound.music.stop();
 
-		var winner:BaseCharacter = (player.dead ? enemy : player);
+		hud.timer.visible = false;
 
+		var winner:BaseCharacter = (player.dead ? enemy : player);
 		winner.velocity.set();
 		winner.specialAnim('idle', 1);
 		winner.acceptInput = false;
@@ -311,6 +320,8 @@ class PlayState extends FlxState
 
 		if (attacker != victim && !attacker.dead && !victim.dead)
 		{
+			var hit:Bool = false;
+
 			if (projectile.type == 'light')
 			{
 				victim.magic += projectile.magicGain * FlxG.elapsed;
@@ -321,12 +332,16 @@ class PlayState extends FlxState
 
 			if (!victim.stunned)
 			{
-				attacker.magic += projectile.magicGain;
+				var isFire:Bool = projectile.type == 'fire';
+				if (!isFire)
+					attacker.magic += projectile.magicGain;
 
-				victim.magic += projectile.magicGain / 3;
-				victim.hurt(projectile.damage, projectile);
+				victim.magic += projectile.magicGain / 3 * (isFire ? 0.5 : 1);
+				victim.hurt(projectile.damage, projectile, !isFire);
 				if (victim == player)
 					FlxG.camera.shake(0.005, 0.1);
+
+				hit = true;
 			}
 
 			projectile.kill();
@@ -337,7 +352,7 @@ class PlayState extends FlxState
 					var sparks:Sparks = cast particlesManager.getNewParticle('sparks');
 					sparks.init(projectile.x + (projectile.width - sparks.width) / 2, projectile.y + (projectile.height - sparks.height) / 2);
 				case 'prism':
-					if (!victim.stunned && victim.speed_mult == 1)
+					if (hit && victim.speed_mult == 1)
 					{
 						victim.color = 0xff5bbbff;
 						victim.speed_mult = 0.4;
@@ -348,6 +363,9 @@ class PlayState extends FlxState
 							victim.speed_mult = 1;
 						});
 					}
+				case 'fire':
+					var explosion:Explosion = cast particlesManager.getNewParticle('explosion');
+					explosion.init(projectile.x + (projectile.width - explosion.width) / 2, projectile.y + (projectile.height - explosion.height) / 2);
 			}
 		}
 	}

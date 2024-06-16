@@ -1,10 +1,10 @@
-package objects.attacks;
+package objects.attacks.supers;
 
-class Spear extends BaseProjectile
+class Fire extends BaseProjectile
 {
 	public function new()
 	{
-		super('spear', 1300, 0.8);
+		super('fire', 1450, 0.8);
 	}
 
 	public function setTarget(posX:Float, posY:Float):Void
@@ -15,7 +15,5 @@ class Spear extends BaseProjectile
 
 		velocity.x = speed * (dx / distance);
 		velocity.y = speed * (dy / distance);
-
-		angle = Math.atan2(dy, dx) * 180 / Math.PI;
 	}
 }

@@ -12,6 +12,7 @@ import objects.attacks.BaseProjectile;
 import objects.attacks.Bottle;
 import objects.attacks.IcePrism;
 import objects.attacks.Spear;
+import objects.attacks.supers.Fire;
 import objects.attacks.supers.Ice;
 import objects.attacks.supers.LightBall;
 import objects.ui.Bar;
@@ -129,20 +130,23 @@ class BaseCharacter extends FlxSprite
 		});
 	}
 
-	public function hurt(damage:Float, projectile:BaseProjectile):Void
+	public function hurt(damage:Float, projectile:BaseProjectile, stun:Bool = true):Void
 	{
-		if (stunned || dead)
+		if ((stunned && stun) || dead)
 			return;
 
 		health -= damage;
 
-		canMove = false;
-		acceptInput = false;
-		stunned = true;
+		if (stun)
+		{
+			canMove = false;
+			acceptInput = false;
+			stunned = true;
 
-		flipX = projectile.x + width / 2 < this.x + width / 2;
+			flipX = projectile.x + width / 2 < this.x + width / 2;
+			FlxTween.cancelTweensOf(this, ['x', 'y']);
+		}
 
-		FlxTween.cancelTweensOf(this, ['x', 'y']);
 		FlxFlicker.stopFlickering(this);
 
 		if (health <= 0)
@@ -160,16 +164,23 @@ class BaseCharacter extends FlxSprite
 		else
 			FlxG.sound.play('assets/sounds/hurt.mp3', 0.5);
 
-		FlxTween.shake(this, 0.05, 0.5, XY, {
-			onComplete: (_) ->
-			{
-				canMove = true;
-				acceptInput = true;
-				FlxFlicker.flicker(this, 1.5, 0.04, true, true, (_) -> stunned = false);
-			}
-		});
+		if (stun)
+		{
+			FlxTween.shake(this, 0.05, 0.5, XY, {
+				onComplete: (_) ->
+				{
+					canMove = true;
+					acceptInput = true;
+					FlxFlicker.flicker(this, 1.5, 0.04, true, true, (_) -> stunned = false);
+				}
+			});
 
-		specialAnim('hurt', 1);
+			specialAnim('hurt', 1);
+		}
+		else
+		{
+			FlxFlicker.flicker(this, 1.5, 0.04, true, true);
+		}
 	}
 
 	public function throwAttack(primary1:Bool, targetX:Float, targetY:Float):Void
@@ -231,7 +242,7 @@ class BaseCharacter extends FlxSprite
 
 	public function throwSuper(init:Bool = true, ?type:String, ?target:BaseCharacter):Void
 	{
-		if (dead || !acceptInput || PlayState.current.lastSuperTime < 12.5)
+		if (dead || !acceptInput || PlayState.current.lastSuperTime < 15)
 			return;
 
 		if (init)
@@ -245,6 +256,7 @@ class BaseCharacter extends FlxSprite
 		else
 		{
 			PlayState.current.lastSuperTime = 0;
+			PlayState.current.hud.timer.visible = true;
 
 			specialAnim('attack');
 
@@ -264,6 +276,32 @@ class BaseCharacter extends FlxSprite
 					ball.velocity.x = ball.speed * (flipX ? -1 : 1);
 					ball.flipX = flipX;
 					ball.parent = this;
+				case 'fire' | 'inferno storm':
+					var fireBalls:Array<Fire> = [];
+					final fireNum:Int = 5;
+					final angleStep:Float = (2 * Math.PI) / fireNum;
+
+					for (i in 0...fireNum)
+					{
+						final angle:Float = i * angleStep;
+						var fireBall:Fire = cast PlayState.current.projectilesManager.getNewProjectile('fire');
+						fireBall.init(this.x
+							+ (this.width - fireBall.width) / 2
+							+ this.width * 1.5 * Math.cos(angle),
+							this.y
+							+ (this.height - fireBall.height) / 2
+							+ this.width * 1.5 * Math.sin(angle));
+						fireBall.flipX = flipX;
+						fireBall.parent = this;
+						fireBalls.push(fireBall);
+					}
+
+					FlxTimer.loop(Std.parseFloat(SelectionState.habilitiesJSON.get('fire').duration) / fireNum, (loop) ->
+					{
+						var curBall:Fire = fireBalls.shift();
+						curBall.setTarget(target.x + (target.width - curBall.width) / 2, target.y + (target.height - curBall.height) / 2);
+						FlxG.sound.play('assets/sounds/throw.mp3', 0.2);
+					}, fireNum);
 			}
 
 			FlxG.camera.flash(FlxColor.WHITE, 0.1);

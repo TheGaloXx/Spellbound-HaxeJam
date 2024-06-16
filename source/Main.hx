@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxGame;
+import flixel.FlxObject;
 import flixel.sound.FlxSound;
 import lime.app.Application;
 import openfl.display.Sprite;
@@ -38,8 +39,10 @@ class Main extends Sprite
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onReset);
 		#end
 
+		#if html5
 		// Thanks to my friend Sanco for this code!!! (it prevents the context menu from popping up when right clicking)
 		js.Syntax.code("document.addEventListener('contextmenu', (ev) => { ev.preventDefault(); })");
+		#end
 	}
 
 	function onReset(key:KeyboardEvent):Void
@@ -65,4 +68,21 @@ class Main extends Sprite
 		type_snd.volume = volume;
 		type_snd.play(true, 20);
 	}
+	/*
+	 *
+	 * 
+	 * 
+	 */
+	/* Too late to use this...
+		public static inline function midPoint(staticSprite:FlxObject, toMoveSprite:FlxObject, axes:AxesType):Float
+		{
+			return switch (axes)
+			{
+				case X:
+					staticSprite.x + (staticSprite.width - toMoveSprite.width) / 2;
+				case Y:
+					staticSprite.y + (staticSprite.height - toMoveSprite.height) / 2;
+			};
+		}
+	 */
 }

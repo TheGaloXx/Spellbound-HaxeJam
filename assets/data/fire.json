@@ -1,6 +1,6 @@
 {
     "title": "Inferno Storm",
-    "damage": "15 (each)",
+    "damage": "7 (each)",
     "cost": 50,
     "duration": 1,
     "description": "Summon five fireballs that automatically target and hit the opponent at high speed",
