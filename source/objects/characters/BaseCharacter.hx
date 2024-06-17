@@ -154,7 +154,7 @@ class BaseCharacter extends FlxSprite
 			dead = true;
 
 			specialAnim('dead', 9999);
-			FlxG.sound.play('assets/sounds/dead.mp3');
+			Main.sound('dead');
 
 			FlxTween.tween(this, {x: this.x + (Std.isOfType(this, Player) ? -60 : 60)}, 1, {ease: FlxEase.sineOut});
 			PlayState.current.endBattle();
@@ -162,7 +162,7 @@ class BaseCharacter extends FlxSprite
 			return;
 		}
 		else
-			FlxG.sound.play('assets/sounds/hurt.mp3', 0.5);
+			Main.sound('hurt', 0.5);
 
 		if (stun)
 		{
@@ -190,7 +190,7 @@ class BaseCharacter extends FlxSprite
 
 		if (cooldown > 0)
 		{
-			FlxG.sound.play('assets/sounds/error.mp3', 0.4).pitch = 0.8;
+			Main.sound('error', 0.4).pitch = 0.8;
 			return;
 		}
 
@@ -206,14 +206,14 @@ class BaseCharacter extends FlxSprite
 				spear.setTarget(targetX, targetY);
 				spear.parent = this;
 
-				FlxG.sound.play('assets/sounds/throw.mp3', 0.5);
+				Main.sound('throw', 0.5);
 			case 'bottle':
 				var bottle:Bottle = cast PlayState.current.projectilesManager.getNewProjectile('bottle');
 				bottle.init(this.x + (this.width - bottle.width) / 2, this.y + (this.height - bottle.height) / 2);
 				bottle.setTarget(targetX, targetY);
 				bottle.parent = this;
 
-				FlxG.sound.play('assets/sounds/throw.mp3', 0.5);
+				Main.sound('throw', 0.5);
 			case 'prism':
 				var firstAngle:Float = 361;
 				for (i in 0...3)
@@ -233,10 +233,11 @@ class BaseCharacter extends FlxSprite
 					}
 				}
 
-				FlxG.sound.play('assets/sounds/prism.mp3', 0.3);
+				Main.sound('prism', 0.3);
 		}
 
-		setCooldown(Std.parseFloat(SelectionState.habilitiesJSON.get(type).cooldown));
+		final rawCooldown:Dynamic = SelectionState.habilitiesJSON.get(type).cooldown;
+		setCooldown((Std.isOfType(rawCooldown, Float) ? cast rawCooldown : Std.parseFloat(rawCooldown)));
 		flipX = targetX < this.x + this.width / 2;
 	}
 
@@ -261,7 +262,9 @@ class BaseCharacter extends FlxSprite
 			specialAnim('attack');
 
 			trace(type);
-			magic -= Std.parseFloat(SelectionState.habilitiesJSON.get(SelectionState.codeFromSuper(type)).cost);
+
+			final rawCost:Dynamic = SelectionState.habilitiesJSON.get(SelectionState.codeFromSuper(type)).cost;
+			magic -= (Std.isOfType(rawCost, Float) ? cast rawCost : Std.parseFloat(rawCost));
 
 			switch (type)
 			{
@@ -296,11 +299,16 @@ class BaseCharacter extends FlxSprite
 						fireBalls.push(fireBall);
 					}
 
-					FlxTimer.loop(Std.parseFloat(SelectionState.habilitiesJSON.get('fire').duration) / fireNum, (loop) ->
+					final rawDuration:Dynamic = SelectionState.habilitiesJSON.get('fire').duration;
+					final caca:Float = Std.isOfType(rawDuration, Float) ? cast rawDuration : Std.parseFloat(rawDuration);
+
+					trace(rawDuration, caca, caca / fireNum);
+
+					FlxTimer.loop(caca / fireNum, (loop) ->
 					{
 						var curBall:Fire = fireBalls.shift();
 						curBall.setTarget(target.x + (target.width - curBall.width) / 2, target.y + (target.height - curBall.height) / 2);
-						FlxG.sound.play('assets/sounds/throw.mp3', 0.2);
+						Main.sound('throw', 0.2);
 					}, fireNum);
 			}
 

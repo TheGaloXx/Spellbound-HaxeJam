@@ -36,7 +36,9 @@ class BaseProjectile extends FlxSprite
 		setGraphicSize(frameSize * Main.pixel_mult);
 		updateHitbox();
 
-		damage = Std.parseFloat(SelectionState.habilitiesJSON.get(type).damage);
+		final rawDamage:Dynamic = SelectionState.habilitiesJSON.get(type).damage;
+
+		damage = (Std.isOfType(rawDamage, Float) ? cast rawDamage : Std.parseFloat(rawDamage));
 	}
 
 	public function init(posX:Float, posY:Float):Void

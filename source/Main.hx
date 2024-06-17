@@ -2,9 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxGame;
-import flixel.FlxObject;
 import flixel.sound.FlxSound;
-import lime.app.Application;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
@@ -18,6 +16,7 @@ import haxe.PosInfos;
 class Main extends Sprite
 {
 	public static inline final pixel_mult:Int = 5;
+	public static inline final sound_extension:String = #if html5 "mp3" #else "ogg" #end;
 
 	public function new()
 	{
@@ -25,6 +24,10 @@ class Main extends Sprite
 
 		#if !debug
 		Log.trace = (v:Dynamic, ?infos:PosInfos) -> {}
+
+		#if hl
+		hl.UI.closeConsole();
+		#end
 		#end
 
 		FlxG.save.bind('Spellbound');
@@ -60,13 +63,18 @@ class Main extends Sprite
 		if (!type_snd?.exists)
 		{
 			type_snd = new FlxSound();
-			type_snd.loadEmbedded('assets/sounds/type.mp3');
+			type_snd.loadEmbedded('assets/sounds/type.$sound_extension');
 		}
 		FlxG.sound.list.add(type_snd);
 
 		type_snd.stop();
 		type_snd.volume = volume;
 		type_snd.play(true, 20);
+	}
+
+	public static function sound(name:String, volume:Float = 1):FlxSound
+	{
+		return FlxG.sound.play('assets/sounds/$name.$sound_extension');
 	}
 	/*
 	 *

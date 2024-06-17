@@ -185,7 +185,7 @@ class SuperSubState extends FlxSubState
 
 		if (key == BACKSPACE)
 		{
-			FlxG.sound.play('assets/sounds/error.mp3', 0.5);
+			Main.sound('error', 0.5);
 
 			if (curCode.length > 0)
 			{
@@ -198,7 +198,7 @@ class SuperSubState extends FlxSubState
 
 		if (curCode.length >= 30 || (curCode.length <= 0 && key == SPACE) || (curCode[curCode.length - 1] == SPACE && key == SPACE))
 		{
-			FlxG.sound.play('assets/sounds/error.mp3', 0.5);
+			Main.sound('error', 0.5);
 			return;
 		}
 
@@ -224,7 +224,7 @@ class SuperSubState extends FlxSubState
 			successfull = true;
 			type = string.toLowerCase();
 
-			FlxG.sound.play('assets/sounds/confirm.mp3', 0.85);
+			Main.sound('confirm', 0.85);
 			FlxTimer.wait(0.5, () -> close());
 		}
 	}

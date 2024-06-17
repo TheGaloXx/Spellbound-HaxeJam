@@ -38,10 +38,12 @@ class Ice extends BaseProjectile
 		this.target = target;
 
 		this.setPosition(target.x + (target.width - this.width) / 2, target.y + (target.height - this.height) / 2);
-		target.freeze(Std.parseFloat(SelectionState.habilitiesJSON.get(type).duration));
+
+		final rawDuration:Dynamic = SelectionState.habilitiesJSON.get(type).duration;
+		target.freeze(Std.isOfType(rawDuration, Float) ? cast rawDuration : Std.parseFloat(rawDuration));
 
 		alpha = 0.35;
 
-		FlxG.sound.play('assets/sounds/win.mp3', 0.5).pitch = 0.5;
+		Main.sound('win', 0.5).pitch = 0.5;
 	}
 }

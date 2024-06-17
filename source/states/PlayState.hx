@@ -209,7 +209,7 @@ class PlayState extends FlxState
 		{
 			winner.specialAnim('cheer', 9999);
 			if (winner == player)
-				FlxG.sound.play('assets/sounds/win.mp3', 0.5);
+				Main.sound('win', 0.5);
 		});
 		FlxTimer.wait(3, () ->
 		{
@@ -257,7 +257,7 @@ class PlayState extends FlxState
 			player.active = true;
 
 			hud.visible = true;
-			FlxG.sound.playMusic('assets/music/battle_theme.mp3', 0.2);
+			FlxG.sound.playMusic('assets/music/battle_theme.' + Main.sound_extension, 0.2);
 		});
 	}
 

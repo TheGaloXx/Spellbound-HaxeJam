@@ -38,7 +38,7 @@ class CreditsSubState extends FlxSubState
 		var exit = new FlxButton(50, 50, 'Go back', () ->
 		{
 			close();
-			FlxG.sound.play('assets/sounds/exit.mp3');
+			Main.sound('exit');
 		});
 		exit.setGraphicSize(exit.width * 2);
 		exit.updateHitbox();

@@ -52,7 +52,7 @@ class MainMenu extends FlxState
 				substate.closeCallback = () -> addLogoBop(logo);
 				openSubState(substate);
 
-				FlxG.sound.play('assets/sounds/confirm.mp3', 0.85);
+				Main.sound('confirm', 0.85);
 			}
 		});
 		credits.setGraphicSize(credits.width * 2);
@@ -94,7 +94,7 @@ class MainMenu extends FlxState
 
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic('assets/music/menu_theme.mp3', 0.3);
+			FlxG.sound.playMusic('assets/music/menu_theme.' + Main.sound_extension, 0.3);
 			FlxG.sound.music.fadeIn(3, 0, 0.5);
 		}
 
@@ -163,7 +163,7 @@ class MainMenu extends FlxState
 		if (transitioning)
 			return;
 
-		FlxG.sound.play('assets/sounds/confirm.mp3', 0.85);
+		Main.sound('confirm', 0.85);
 		FlxTimer.wait(1, () ->
 		{
 			FlxG.switchState(new SelectionState());

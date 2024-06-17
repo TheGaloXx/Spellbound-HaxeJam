@@ -3,6 +3,7 @@ package states;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEvent;
@@ -28,7 +29,6 @@ class SelectionState extends FlxState
 	private var build:CharacterBuild;
 	private var descBox:HabilityDescriptionBox;
 	private var play:FlxButton;
-	private var tutorial:FlxSprite;
 
 	public static var curLevel:Int = 5;
 
@@ -42,7 +42,10 @@ class SelectionState extends FlxState
 		for (i in ['spear', 'bottle', 'prism', 'ice', 'fire', 'light'])
 		{
 			var rawJson:String = Assets.getText('assets/data/$i.json');
+			trace(rawJson);
 			var json:Dynamic = Json.parse(rawJson);
+			trace(json);
+			trace(json.codeName);
 
 			habilitiesJSON.set(json.codeName, json);
 
@@ -174,14 +177,11 @@ class SelectionState extends FlxState
 
 		play = new FlxButton(0, 0, 'Start', () ->
 		{
-			if (acceptInput())
-			{
-				if (FlxG.sound.music != null && FlxG.sound.music.playing)
-					FlxG.sound.music.stop();
+			if (FlxG.sound.music != null && FlxG.sound.music.playing)
+				FlxG.sound.music.stop();
 
-				FlxG.switchState(new PlayState(build));
-				FlxG.sound.play('assets/sounds/confirm.mp3', 0.85).persist = true;
-			}
+			FlxG.switchState(new PlayState(build));
+			Main.sound('confirm', 0.85).persist = true;
 		});
 		play.setGraphicSize(play.width * 2);
 		play.updateHitbox();
@@ -194,11 +194,8 @@ class SelectionState extends FlxState
 
 		var exit = new FlxButton(0, 0, 'Go back', () ->
 		{
-			if (acceptInput())
-			{
-				FlxG.switchState(new MainMenu());
-				FlxG.sound.play('assets/sounds/exit.mp3', 0.3).persist = true;
-			}
+			FlxG.switchState(new MainMenu());
+			Main.sound('exit', 0.3).persist = true;
 		});
 		exit.setGraphicSize(exit.width * 2);
 		exit.updateHitbox();
@@ -207,12 +204,10 @@ class SelectionState extends FlxState
 		exit.setPosition(play.x - exit.width - 20, play.y);
 		add(exit);
 
-		descBox = new HabilityDescriptionBox();
-		add(descBox);
-
-		build = new CharacterBuild();
-
-		var tutorialButton = new FlxButton(0, 0, 'Tutorial', toggleTutorial);
+		var tutorialButton = new FlxButton(0, 0, 'Tutorial', () ->
+		{
+			openSubState(new TutorialSubState());
+		});
 		tutorialButton.setGraphicSize(tutorialButton.width * 2);
 		tutorialButton.updateHitbox();
 		tutorialButton.label.setGraphicSize(tutorialButton.label.width * 2);
@@ -220,25 +215,23 @@ class SelectionState extends FlxState
 		tutorialButton.setPosition(exit.x - tutorialButton.width - 20, exit.y);
 		add(tutorialButton);
 
-		tutorial = new FlxSprite().loadGraphic('assets/images/menu/tutorial.png');
-		tutorial.active = false;
-		tutorial.alpha = 0;
-		tutorial.visible = false;
-		tutorial.screenCenter();
-		add(tutorial);
+		descBox = new HabilityDescriptionBox();
+		add(descBox);
+
+		build = new CharacterBuild();
 
 		if (FlxG.save.data.seenTutorial == null || FlxG.save.data.seenTutorial == false)
 		{
 			FlxG.save.data.seenTutorial = true;
 			FlxG.save.flush();
 
-			toggleTutorial();
+			tutorialButton.onUp.callback();
 		}
 	}
 
 	function increaseAIlevel(spr:FlxSprite):Void
 	{
-		if (!acceptInput())
+		if (subState?.exists)
 			return;
 
 		curLevel++;
@@ -252,14 +245,6 @@ class SelectionState extends FlxState
 	override function update(elapsed:Float):Void
 	{
 		descBox.visible = false;
-
-		if (!acceptInput())
-		{
-			if (tutorial.alpha == 1
-				&& tutorial.visible
-				&& (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE, SPACE]) || FlxG.mouse.justPressed))
-				toggleTutorial();
-		}
 
 		var found:BoxOutline = null;
 		if (FlxG.mouse.overlaps(portraits))
@@ -329,7 +314,7 @@ class SelectionState extends FlxState
 
 					trace('Current build: $build.');
 
-					FlxG.sound.play('assets/sounds/Coffee1.mp3', 0.3);
+					Main.sound('Coffee1', 0.3);
 
 					return;
 				}
@@ -365,7 +350,7 @@ class SelectionState extends FlxState
 
 		trace('Current build: $build.');
 
-		FlxG.sound.play('assets/sounds/Coffee2.mp3', 0.3);
+		Main.sound('Coffee2', 0.3);
 
 		for (member in outlines.members)
 		{
@@ -374,27 +359,6 @@ class SelectionState extends FlxState
 				member.kill();
 		}
 	}
-
-	function toggleTutorial():Void
-	{
-		if (!tutorial.visible)
-		{
-			FlxG.sound.play('assets/sounds/confirm.mp3', 0.7);
-			tutorial.visible = true;
-			FlxTween.cancelTweensOf(tutorial, ['alpha']);
-			tutorial.alpha = 0;
-			FlxTween.tween(tutorial, {alpha: 1}, 0.5);
-		}
-		else
-		{
-			FlxG.sound.play('assets/sounds/exit.mp3', 0.3);
-			FlxTween.cancelTweensOf(tutorial, ['alpha']);
-			FlxTween.tween(tutorial, {alpha: 0}, 0.25, {onComplete: (_) -> tutorial.visible = false});
-		}
-	}
-
-	inline function acceptInput():Bool
-		return !tutorial.visible;
 }
 
 private class BoxOutline extends FlxSprite

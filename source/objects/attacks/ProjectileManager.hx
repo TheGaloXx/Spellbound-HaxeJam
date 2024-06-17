@@ -5,6 +5,7 @@ import flixel.util.FlxSort;
 import objects.attacks.supers.Fire;
 import objects.attacks.supers.Ice;
 import objects.attacks.supers.LightBall;
+import states.SelectionState;
 
 class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 {
