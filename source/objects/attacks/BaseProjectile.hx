@@ -8,14 +8,14 @@ class BaseProjectile extends FlxSprite
 {
 	private inline static final frameSize:Int = 16;
 
-	private var size:Float;
-	private var hitboxSize:Float;
+	private var size:Null<Float>;
+	private var hitboxSize:Null<Float>;
 
 	public var type:String;
 	public var parent:BaseCharacter;
-	public var damage:Float;
-	public var magicGain:Float = 10;
-	public var speed:Float;
+	public var damage:Null<Float>;
+	public var magicGain:Null<Float> = 10;
+	public var speed:Null<Float>;
 
 	public function new(type:String, speed:Float, size:Float = 1, hitboxSize:Float = 1)
 	{
@@ -97,5 +97,18 @@ class BaseProjectile extends FlxSprite
 		}
 
 		super.update(elapsed);
+	}
+
+	override function destroy():Void
+	{
+		super.destroy();
+
+		size = null;
+		hitboxSize = null;
+		type = null;
+		parent = null;
+		damage = null;
+		magicGain = null;
+		speed = null;
 	}
 }

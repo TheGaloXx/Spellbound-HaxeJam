@@ -28,23 +28,23 @@ class BaseCharacter extends FlxSprite
 	private var timer:FlxTimer = null;
 
 	public var build:CharacterBuild;
-	public var speed_mult:Float = 1;
-	public var canMove:Bool = true;
-	public var acceptInput:Bool = true;
-	public var stunned:Bool = false;
-	public var health(default, set):Float = 100;
-	public var magic(default, set):Float = 0;
+	public var speed_mult:Null<Float> = 1;
+	public var canMove:Null<Bool> = true;
+	public var acceptInput:Null<Bool> = true;
+	public var stunned:Null<Bool> = false;
+	public var health(default, set):Null<Float> = 100;
+	public var magic(default, set):Null<Float> = 0;
 	public var hudBar:Bar;
-	public var dead:Bool = false;
+	public var dead:Null<Bool> = false;
 
-	public var cooldown:Float = 0;
+	public var cooldown:Null<Float> = 0;
 
-	private var maxCooldown:Float = 0;
+	private var maxCooldown:Null<Float> = 0;
 	private var cooldownBar:FlxSprite;
 
-	public var speed(get, default):Float;
+	public var speed(get, default):Null<Float>;
 
-	function get_speed():Float
+	function get_speed():Null<Float>
 	{
 		return base_speed * speed_mult;
 	}
@@ -109,6 +109,20 @@ class BaseCharacter extends FlxSprite
 	{
 		super.destroy();
 		cooldownBar.destroy();
+
+		timer = null;
+		build = null;
+		speed_mult = null;
+		canMove = null;
+		acceptInput = null;
+		stunned = null;
+		health = null;
+		magic = null;
+		hudBar = null;
+		dead = null;
+		cooldown = null;
+		maxCooldown = null;
+		speed = null;
 	}
 
 	private function playAnim(name:String, force:Bool = false, frame:Int = 0):Void
@@ -265,7 +279,7 @@ class BaseCharacter extends FlxSprite
 
 			specialAnim('attack');
 
-			trace(type);
+			trace('Spell type: $type!');
 
 			magic -= SelectionState.attackProperty(SelectionState.codeFromSuper(type), 'cost');
 
@@ -315,8 +329,11 @@ class BaseCharacter extends FlxSprite
 		}
 	}
 
-	function set_health(value:Float):Float
+	function set_health(value:Null<Float>):Null<Float>
 	{
+		if (value == null)
+			return null;
+
 		value = FlxMath.bound(value, 0, 100);
 
 		if (health == value)
@@ -328,8 +345,11 @@ class BaseCharacter extends FlxSprite
 		return health;
 	}
 
-	function set_magic(value:Float):Float
+	function set_magic(value:Null<Float>):Null<Float>
 	{
+		if (value == null)
+			return null;
+
 		value = FlxMath.bound(value, 0, 100);
 
 		if (magic == value)

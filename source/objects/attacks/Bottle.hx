@@ -43,11 +43,11 @@ class Bottle extends BaseProjectile
 		}
 	}
 
-	var startX:Float;
-	var startY:Float;
-	var time:Float;
-	var totalTime:Float;
-	var curveSize:Float;
+	var startX:Null<Float>;
+	var startY:Null<Float>;
+	var time:Null<Float>;
+	var totalTime:Null<Float>;
+	var curveSize:Null<Float>;
 
 	public function setTarget(tarX:Float, tarY:Float):Void
 	{
@@ -64,20 +64,28 @@ class Bottle extends BaseProjectile
 		super.destroy();
 
 		target.put();
+		startX = null;
+		startY = null;
+		time = null;
+		totalTime = null;
+		curveSize = null;
 	}
 
 	override function kill():Void
 	{
 		super.kill();
 
-		final manager = PlayState.current.particlesManager;
-		if (manager != null)
+		if (PlayState.current != null)
 		{
-			var splash:BottleSplash = cast manager.getNewParticle('bottle');
-			splash.init(this.x + (this.width - splash.width) / 2, this.y + (this.height - splash.height) / 2);
-			splash.color = [0x14a02e, 0xb4202a, 0x249fde][this.animation.curAnim.curFrame];
+			final manager = PlayState.current.particlesManager;
+			if (manager != null)
+			{
+				var splash:BottleSplash = cast manager.getNewParticle('bottle');
+				splash.init(this.x + (this.width - splash.width) / 2, this.y + (this.height - splash.height) / 2);
+				splash.color = [0x14a02e, 0xb4202a, 0x249fde][this.animation.curAnim.curFrame];
 
-			Main.sound('bottle_crash', 0.5);
+				Main.sound('bottle_crash', 0.5);
+			}
 		}
 	}
 }

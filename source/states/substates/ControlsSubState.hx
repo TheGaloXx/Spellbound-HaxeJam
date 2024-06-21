@@ -171,7 +171,7 @@ class ControlsSubState extends FlxSubState
 			replacing.text = split[0] + ': ' + key.toString();
 			Reflect.setField(newControls, split[0].split(' ')[1], key.toString()); // then save it to the new controls but keeping only the direction
 
-			trace(newControls.left, newControls.down, newControls.up, newControls.right, newControls.spell);
+			trace('NEW KEYBINDS: ', newControls.left, newControls.down, newControls.up, newControls.right, newControls.spell);
 
 			alreadySetKeys.push(key);
 			FlxFlicker.stopFlickering(replacing);

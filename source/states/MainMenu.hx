@@ -122,16 +122,10 @@ class MainMenu extends FlxState
 				var newText:String = '';
 
 				for (i in curCode)
-				{
 					newText += Std.string(i) + ' ';
 
-					trace(i, curCode.length - 1, code.length - curCode.length);
-				}
-
 				for (i in 0...4 - curCode.length)
-				{
 					newText += '_ ';
-				}
 
 				play.text = newText;
 

@@ -82,4 +82,11 @@ class BaseParticle extends FlxSprite
 
 		super.update(elapsed);
 	}
+
+	override function destroy():Void
+	{
+		super.destroy();
+
+		type = null;
+	}
 }

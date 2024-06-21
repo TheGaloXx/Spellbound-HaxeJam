@@ -20,11 +20,23 @@ import objects.particles.Explosion;
 import objects.particles.ParticlesManager.ParticleManager;
 import objects.particles.Sparks;
 import objects.ui.*;
+import states.substates.PauseSubState;
 import states.substates.SuperSubState;
 
 class PlayState extends FlxState
 {
-	public static var current:PlayState = null;
+	public static var current(get, null):PlayState = null;
+
+	static function get_current():PlayState
+	{
+		if (current == null)
+		{
+			trace('Current PlayState is null!');
+			return null;
+		}
+		else
+			return current;
+	}
 
 	private var bg:FlxSprite;
 
@@ -42,7 +54,9 @@ class PlayState extends FlxState
 	public var projectilesManager:ProjectileManager;
 	public var particlesManager:ParticleManager;
 	public var build:CharacterBuild;
-	public var lastSuperTime:Float = 15;
+	public var lastSuperTime:Null<Float> = 15;
+
+	private var canPause:Null<Bool> = false;
 
 	override public function new(build:CharacterBuild)
 	{
@@ -50,6 +64,8 @@ class PlayState extends FlxState
 
 		this.build = build;
 		current = this;
+
+		FlxG.signals.postStateSwitch.removeAll();
 	}
 
 	function addStage():Void
@@ -164,6 +180,40 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
+		if (canPause && FlxG.keys.justPressed.ESCAPE)
+		{
+			canPause = false;
+
+			FlxG.sound.music.volume = (FlxG.save.data.musicEnabled ? 0.025 : 0);
+
+			// pause tweens and timers too
+			@:privateAccess
+			{
+				for (tween in FlxTween.globalManager._tweens)
+					tween.active = false;
+				for (timer in FlxTimer.globalManager._timers)
+					timer.active = false;
+			}
+
+			var substate = new PauseSubState(hud.cam);
+			substate.closeCallback = () ->
+			{
+				// resume tweens and timers
+				@:privateAccess
+				{
+					for (tween in FlxTween.globalManager._tweens)
+						tween.active = true;
+					for (timer in FlxTimer.globalManager._timers)
+						timer.active = true;
+				}
+
+				FlxG.sound.music.volume = (FlxG.save.data.musicEnabled ? 0.2 : 0);
+				canPause = true;
+			}
+			openSubState(substate);
+			return;
+		}
+
 		lastSuperTime += elapsed;
 		final timeLeft:Float = 15 - lastSuperTime;
 		if (timeLeft > 0)
@@ -188,10 +238,15 @@ class PlayState extends FlxState
 
 		FlxG.mouse.unload();
 		current = null;
+		build = null;
+		lastSuperTime = null;
+		canPause = null;
 	}
 
 	public function endBattle():Void
 	{
+		canPause = false;
+
 		if (FlxG.sound.music != null && FlxG.sound.music.playing)
 			FlxG.sound.music.stop();
 
@@ -258,6 +313,7 @@ class PlayState extends FlxState
 			player.active = true;
 
 			hud.visible = true;
+			canPause = true;
 
 			Main.music('battle_theme', 0.2);
 		});
@@ -265,6 +321,8 @@ class PlayState extends FlxState
 
 	public function onSuperThrown(character:BaseCharacter, isAI:Bool)
 	{
+		canPause = false;
+
 		projectilesManager.killMembers();
 		player.active = false;
 		enemy.active = false;
@@ -309,6 +367,8 @@ class PlayState extends FlxState
 					character.specialAnim('hurt');
 					character.magic = character.magic / 4;
 				}
+
+				canPause = true;
 			});
 		}
 	}

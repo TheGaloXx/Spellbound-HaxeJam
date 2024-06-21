@@ -42,6 +42,7 @@ class Main extends Sprite
 		FlxG.sound.muteKeys = [];
 		FlxG.mouse.visible = true;
 		FlxG.signals.preStateCreate.add((_) -> FlxMouseEvent.removeAll());
+		FlxG.fixedTimestep = false;
 
 		#if debug
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onReset);

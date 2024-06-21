@@ -21,9 +21,4 @@ class Sparks extends BaseParticle
 				kill();
 		}
 	}
-
-	override function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
-	}
 }

@@ -293,8 +293,6 @@ class SelectionState extends FlxState
 			{
 				if (member.x == found.x && member.y == found.y)
 				{
-					trace('found:', found, 'member:', member);
-
 					if (member.ID <= 2)
 					{
 						if (build.primary1 == member.hability)

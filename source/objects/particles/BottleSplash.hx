@@ -25,9 +25,4 @@ class BottleSplash extends BaseParticle
 				FlxTween.tween(this, {alpha: 0}, 2, {startDelay: 1, onComplete: (_) -> kill()});
 		}
 	}
-
-	override function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
-	}
 }

@@ -2,7 +2,6 @@ package objects.characters;
 
 import flixel.FlxG;
 import flixel.math.FlxMath;
-import objects.attacks.Spear;
 import states.PlayState;
 
 class Enemy extends BaseCharacter
@@ -10,12 +9,12 @@ class Enemy extends BaseCharacter
 	@:noCompletion
 	private static final AI_level_bounds:Array<Int> = [1, 10];
 
-	public var AI_level:Int;
+	public var AI_level:Null<Int>;
 
-	private var moveFrequency:Float;
+	private var moveFrequency:Null<Float>;
 
-	private var targetX:Float;
-	private var targetY:Float;
+	private var targetX:Null<Float>;
+	private var targetY:Null<Float>;
 
 	public function new(AI_level:Int)
 	{
@@ -39,9 +38,9 @@ class Enemy extends BaseCharacter
 		moveFrequency = minTime + ((maxLevel - AI_level) * (maxTime - minTime) / maxLevel);
 	}
 
-	var moveTimer:Float = 0;
-	var attackTimer:Float = 0;
-	var distanceFromTarget:Float;
+	var moveTimer:Null<Float> = 0;
+	var attackTimer:Null<Float> = 0;
+	var distanceFromTarget:Null<Float>;
 
 	override function update(elapsed:Float):Void
 	{
@@ -114,6 +113,19 @@ class Enemy extends BaseCharacter
 	{
 		targetX = FlxG.width / 2 + FlxG.random.float(0, FlxG.width / 2 - width);
 		targetY = FlxG.random.float(0, FlxG.height - height);
+	}
+
+	override function destroy():Void
+	{
+		super.destroy();
+
+		AI_level = null;
+		moveFrequency = null;
+		targetX = null;
+		targetY = null;
+		moveTimer = null;
+		attackTimer = null;
+		distanceFromTarget = null;
 	}
 
 	override public function toString():String

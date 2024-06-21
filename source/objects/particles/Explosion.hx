@@ -21,9 +21,4 @@ class Explosion extends BaseParticle
 				kill();
 		}
 	}
-
-	override function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
-	}
 }

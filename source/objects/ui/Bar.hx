@@ -3,7 +3,6 @@ package objects.ui;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import objects.characters.BaseCharacter;
 import states.PlayState;
@@ -171,5 +170,6 @@ class Bar extends FlxSpriteGroup
 
 		healthRect.put();
 		magicRect.put();
+		habilities = null;
 	}
 }

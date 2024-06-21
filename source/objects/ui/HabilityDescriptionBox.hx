@@ -3,7 +3,6 @@ package objects.ui;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
 
 class HabilityDescriptionBox extends FlxSpriteGroup
@@ -45,6 +44,9 @@ class HabilityDescriptionBox extends FlxSpriteGroup
 
 	function set_text(value:String):String
 	{
+		if (value == null)
+			return null;
+
 		if (text == value)
 			return text;
 
