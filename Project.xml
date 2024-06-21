@@ -16,7 +16,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="false" />
@@ -35,13 +35,12 @@
 	<source path="source" />
 	<assets path="assets" preload="true" exclude="*.ogg" if="web"/>
 	<assets path="assets" preload="true" exclude="*.mp3"  unless="web"/>
+	<assets path="assets/data" embed="true"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
-
-	<!--In case you want to use the ui package-->
 	<!--<haxelib name="flixel-ui" />-->
 
 	<!--In case you want to use nape with flixel-->

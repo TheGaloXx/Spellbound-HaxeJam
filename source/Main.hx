@@ -2,11 +2,14 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxGame;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.sound.FlxSound;
+import flixel.ui.FlxButton;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 import states.SelectionState;
+import states.SettingsState;
 import states.StartScreen;
 #if !debug
 import haxe.Log;
@@ -32,11 +35,13 @@ class Main extends Sprite
 
 		FlxG.save.bind('Spellbound');
 		addChild(new FlxGame(0, 0, #if SKIP_INTRO SelectionState #else StartScreen #end, 60, 60, true, false));
+		SettingsState.init();
 
 		FlxG.sound.volume = 0.5; // we did make everything pretty loud, sorry
 		FlxG.keys.preventDefaultKeys = [TAB, UP, DOWN, LEFT, RIGHT, F1, F11, #if !debug F12 #end];
 		FlxG.sound.muteKeys = [];
-		FlxG.fullscreen = false;
+		FlxG.mouse.visible = true;
+		FlxG.signals.preStateCreate.add((_) -> FlxMouseEvent.removeAll());
 
 		#if debug
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onReset);
@@ -60,6 +65,9 @@ class Main extends Sprite
 
 	public static function typeSound(volume:Float = 1.0):Void
 	{
+		if (!FlxG.save.data.sfxEnabled)
+			volume = 0;
+
 		if (!type_snd?.exists)
 		{
 			type_snd = new FlxSound();
@@ -74,7 +82,35 @@ class Main extends Sprite
 
 	public static function sound(name:String, volume:Float = 1):FlxSound
 	{
-		return FlxG.sound.play('assets/sounds/$name.$sound_extension');
+		if (!FlxG.save.data.sfxEnabled)
+			volume = 0;
+
+		return FlxG.sound.play('assets/sounds/$name.$sound_extension', volume);
+	}
+
+	public static function makeButton(text:String, callback:Void->Void):FlxButton
+	{
+		var button = new FlxButton(0, 0, text, callback);
+		button.setGraphicSize(button.width * 2);
+		button.updateHitbox();
+		button.label.setGraphicSize(button.label.width * 2);
+		button.label.updateHitbox();
+
+		return button;
+	}
+
+	public inline static function changeFPS(cap:Int)
+	{
+		if (cap > FlxG.drawFramerate)
+		{
+			FlxG.updateFramerate = cap;
+			FlxG.drawFramerate = cap;
+		}
+		else
+		{
+			FlxG.drawFramerate = cap;
+			FlxG.updateFramerate = cap;
+		}
 	}
 	/*
 	 *

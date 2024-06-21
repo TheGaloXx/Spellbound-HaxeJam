@@ -13,7 +13,7 @@ class Bottle extends BaseProjectile
 
 	public function new()
 	{
-		super('bottle', 700, 0.7);
+		super('bottle', 700, 0.7, 0.9);
 	}
 
 	override public function init(posX:Float, posY:Float):Void

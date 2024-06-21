@@ -9,7 +9,6 @@ import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
@@ -21,12 +20,15 @@ class MainMenu extends FlxState
 	private final code:Array<FlxKey> = [P, L, A, Y];
 	private final curCode:Array<FlxKey> = [];
 	private var play:FlxText;
+	private var bg:FlxBackdrop;
+
+	public static var scrollCords:Array<Float> = [];
 
 	override public function create()
 	{
 		super.create();
 
-		var bg = new FlxBackdrop('assets/images/menu/background_scroll.png');
+		bg = new FlxBackdrop('assets/images/menu/background_scroll.png');
 		bg.setGraphicSize(bg.width * 2);
 		bg.updateHitbox();
 		bg.velocity.set(70, 70);
@@ -42,7 +44,7 @@ class MainMenu extends FlxState
 
 		addLogoBop(logo);
 
-		var credits = new FlxButton(50, 0, 'Credits', () ->
+		var credits = Main.makeButton('Credits', () ->
 		{
 			if (!transitioning)
 			{
@@ -55,12 +57,19 @@ class MainMenu extends FlxState
 				Main.sound('confirm', 0.85);
 			}
 		});
-		credits.setGraphicSize(credits.width * 2);
-		credits.updateHitbox();
-		credits.label.setGraphicSize(credits.label.width * 2);
-		credits.label.updateHitbox();
-		credits.y = FlxG.height - credits.height - 30;
+		credits.setPosition(50, FlxG.height - credits.height - 30);
 		add(credits);
+
+		var settings = Main.makeButton('Settings', () ->
+		{
+			if (!transitioning)
+			{
+				Main.sound('confirm', 0.85).persist = true;
+				FlxG.switchState(new SettingsState());
+			}
+		});
+		settings.setPosition(50, credits.y - settings.height - 10);
+		add(settings);
 
 		if (!alreadyTyped)
 		{
@@ -79,14 +88,7 @@ class MainMenu extends FlxState
 		}
 		else
 		{
-			var play = new FlxButton(0, 0, 'Play', () ->
-			{
-				transition();
-			});
-			play.setGraphicSize(play.width * 2);
-			play.updateHitbox();
-			play.label.setGraphicSize(play.label.width * 2);
-			play.label.updateHitbox();
+			var play = Main.makeButton('Play', transition);
 			play.screenCenter(X);
 			play.y = credits.y;
 			add(play);
@@ -94,8 +96,9 @@ class MainMenu extends FlxState
 
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic('assets/music/menu_theme.' + Main.sound_extension, 0.3);
-			FlxG.sound.music.fadeIn(3, 0, 0.5);
+			final volume:Float = (FlxG.save.data.musicEnabled ? 0.5 : 0);
+			FlxG.sound.playMusic('assets/music/menu_theme.' + Main.sound_extension, volume);
+			FlxG.sound.music.fadeIn(3, 0, volume);
 		}
 
 		FlxG.camera.fade(FlxColor.BLACK, 1, true);
@@ -104,6 +107,8 @@ class MainMenu extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		scrollCords = [bg.x, bg.y];
 
 		if (!alreadyTyped && FlxG.keys.justPressed.ANY)
 		{

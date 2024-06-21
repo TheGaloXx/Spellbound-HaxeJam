@@ -4,7 +4,7 @@ class Spear extends BaseProjectile
 {
 	public function new()
 	{
-		super('spear', 1300, 0.8);
+		super('spear', 1300, 0.8, 0.8);
 	}
 
 	public function setTarget(posX:Float, posY:Float):Void

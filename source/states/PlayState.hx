@@ -257,7 +257,9 @@ class PlayState extends FlxState
 			player.active = true;
 
 			hud.visible = true;
-			FlxG.sound.playMusic('assets/music/battle_theme.' + Main.sound_extension, 0.2);
+
+			final volume:Float = (FlxG.save.data.musicEnabled ? 0.2 : 0);
+			FlxG.sound.playMusic('assets/music/battle_theme.' + Main.sound_extension, volume);
 		});
 	}
 

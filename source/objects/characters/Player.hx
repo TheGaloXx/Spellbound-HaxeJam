@@ -36,7 +36,7 @@ class Player extends BaseCharacter
 			}
 		}
 
-		if (FlxG.keys.justPressed.SPACE && canUseSuper())
+		if (Controls.spell.justPressed && canUseSuper())
 		{
 			throwSuper();
 		}
@@ -44,10 +44,10 @@ class Player extends BaseCharacter
 
 	private inline function updateMovement():Void
 	{
-		var left = FlxG.keys.pressed.A;
-		var down = FlxG.keys.pressed.S;
-		var up = FlxG.keys.pressed.W;
-		var right = FlxG.keys.pressed.D;
+		var left = Controls.left.pressed;
+		var down = Controls.down.pressed;
+		var up = Controls.up.pressed;
+		var right = Controls.right.pressed;
 
 		if (left && right)
 		{

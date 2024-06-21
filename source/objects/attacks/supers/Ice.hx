@@ -39,8 +39,7 @@ class Ice extends BaseProjectile
 
 		this.setPosition(target.x + (target.width - this.width) / 2, target.y + (target.height - this.height) / 2);
 
-		final rawDuration:Dynamic = SelectionState.habilitiesJSON.get(type).duration;
-		target.freeze(Std.isOfType(rawDuration, Float) ? cast rawDuration : Std.parseFloat(rawDuration));
+		target.freeze(SelectionState.attackProperty(type, 'duration'));
 
 		alpha = 0.35;
 

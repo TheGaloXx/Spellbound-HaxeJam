@@ -6,7 +6,7 @@ class LightBall extends BaseProjectile
 {
 	public function new()
 	{
-		super('light', 200, 3);
+		super('light', 200, 3, 0.8);
 	}
 
 	override function init(posX:Float, posY:Float):Void

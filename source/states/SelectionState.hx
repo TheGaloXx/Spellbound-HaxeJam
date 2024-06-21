@@ -41,11 +41,8 @@ class SelectionState extends FlxState
 
 		for (i in ['spear', 'bottle', 'prism', 'ice', 'fire', 'light'])
 		{
-			var rawJson:String = Assets.getText('assets/data/$i.json');
-			trace(rawJson);
+			var rawJson:String = Assets.getText('assets/data/attacks/$i.json');
 			var json:Dynamic = Json.parse(rawJson);
-			trace(json);
-			trace(json.codeName);
 
 			habilitiesJSON.set(json.codeName, json);
 
@@ -76,6 +73,23 @@ class SelectionState extends FlxState
 		}
 
 		return codeName;
+	}
+
+	public static inline function attackProperty(attackType:String, property:String)
+	{
+		var rawValue:Dynamic = Reflect.field(habilitiesJSON.get(attackType), property);
+
+		switch (property)
+		{
+			case 'title' | 'description' | 'codeName':
+				if (!Std.isOfType(rawValue, String))
+					rawValue = Std.string(rawValue);
+			case 'damage' | 'cooldown' | 'cost' | 'duration':
+				if (!Std.isOfType(rawValue, Float))
+					rawValue = Std.parseFloat(rawValue);
+		}
+
+		return rawValue;
 	}
 
 	override function create():Void
@@ -175,7 +189,7 @@ class SelectionState extends FlxState
 		selectOutline = new BoxOutline();
 		add(selectOutline);
 
-		play = new FlxButton(0, 0, 'Start', () ->
+		play = Main.makeButton('Start', () ->
 		{
 			if (FlxG.sound.music != null && FlxG.sound.music.playing)
 				FlxG.sound.music.stop();
@@ -183,35 +197,20 @@ class SelectionState extends FlxState
 			FlxG.switchState(new PlayState(build));
 			Main.sound('confirm', 0.85).persist = true;
 		});
-		play.setGraphicSize(play.width * 2);
-		play.updateHitbox();
-		play.label.setGraphicSize(play.label.width * 2);
-		play.label.updateHitbox();
 		play.setPosition(FlxG.width - 50 - play.width, FlxG.height - 30 - play.height);
 		play.alpha = 0.5;
 		play.active = false;
 		add(play);
 
-		var exit = new FlxButton(0, 0, 'Go back', () ->
+		var exit = Main.makeButton('Go back', () ->
 		{
 			FlxG.switchState(new MainMenu());
 			Main.sound('exit', 0.3).persist = true;
 		});
-		exit.setGraphicSize(exit.width * 2);
-		exit.updateHitbox();
-		exit.label.setGraphicSize(exit.label.width * 2);
-		exit.label.updateHitbox();
 		exit.setPosition(play.x - exit.width - 20, play.y);
 		add(exit);
 
-		var tutorialButton = new FlxButton(0, 0, 'Tutorial', () ->
-		{
-			openSubState(new TutorialSubState());
-		});
-		tutorialButton.setGraphicSize(tutorialButton.width * 2);
-		tutorialButton.updateHitbox();
-		tutorialButton.label.setGraphicSize(tutorialButton.label.width * 2);
-		tutorialButton.label.updateHitbox();
+		var tutorialButton = Main.makeButton('Tutorial', () -> openSubState(new TutorialSubState()));
 		tutorialButton.setPosition(exit.x - tutorialButton.width - 20, exit.y);
 		add(tutorialButton);
 

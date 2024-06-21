@@ -154,14 +154,12 @@ class Bar extends FlxSpriteGroup
 		final state:PlayState = PlayState.current;
 		final characterParent:BaseCharacter = (state.player.hudBar == this ? state.player : state.enemy);
 
-		final rawCost:Dynamic = SelectionState.habilitiesJSON.get(characterParent.build.super1).cost;
-		if (newMagic >= (Std.isOfType(rawCost, Float) ? cast rawCost : Std.parseFloat(rawCost)))
+		if (newMagic >= SelectionState.attackProperty(characterParent.build.super1, 'cost'))
 			habilities[0].animation.play('on');
 		else
 			habilities[0].animation.play('off');
 
-		final rawCost:Dynamic = SelectionState.habilitiesJSON.get(characterParent.build.super2).cost;
-		if (newMagic >= (Std.isOfType(rawCost, Float) ? cast rawCost : Std.parseFloat(rawCost)))
+		if (newMagic >= SelectionState.attackProperty(characterParent.build.super2, 'cost'))
 			habilities[1].animation.play('on');
 		else
 			habilities[1].animation.play('off');

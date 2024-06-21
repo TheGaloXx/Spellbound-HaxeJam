@@ -9,6 +9,7 @@ class BaseProjectile extends FlxSprite
 	private inline static final frameSize:Int = 16;
 
 	private var size:Float;
+	private var hitboxSize:Float;
 
 	public var type:String;
 	public var parent:BaseCharacter;
@@ -16,13 +17,14 @@ class BaseProjectile extends FlxSprite
 	public var magicGain:Float = 10;
 	public var speed:Float;
 
-	public function new(type:String, speed:Float, size:Float = 1)
+	public function new(type:String, speed:Float, size:Float = 1, hitboxSize:Float = 1)
 	{
 		super();
 
 		this.type = type;
 		this.speed = speed;
 		this.size = size;
+		this.hitboxSize = hitboxSize;
 
 		loadGraphic('assets/images/attacks.png', true, 16, 16);
 		animation.add('bottle', [1, 3, 7], 0, false);
@@ -36,9 +38,7 @@ class BaseProjectile extends FlxSprite
 		setGraphicSize(frameSize * Main.pixel_mult);
 		updateHitbox();
 
-		final rawDamage:Dynamic = SelectionState.habilitiesJSON.get(type).damage;
-
-		damage = (Std.isOfType(rawDamage, Float) ? cast rawDamage : Std.parseFloat(rawDamage));
+		damage = SelectionState.attackProperty(type, 'damage');
 	}
 
 	public function init(posX:Float, posY:Float):Void
@@ -49,8 +49,11 @@ class BaseProjectile extends FlxSprite
 		acceleration.set();
 		setGraphicSize(frameSize * Main.pixel_mult);
 		updateHitbox();
-		scale.x *= size;
-		scale.y *= size;
+		final scaleX = scale.x * size;
+		final scaleY = scale.y * size;
+		scale.set(scaleX * hitboxSize, scaleY * hitboxSize);
+		updateHitbox();
+		scale.set(scaleX, scaleY);
 
 		angle = 0;
 		alpha = 1;

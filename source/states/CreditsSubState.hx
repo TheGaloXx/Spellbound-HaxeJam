@@ -35,15 +35,12 @@ class CreditsSubState extends FlxSubState
 		text.screenCenter();
 		add(text);
 
-		var exit = new FlxButton(50, 50, 'Go back', () ->
+		var exit = Main.makeButton('Go back', () ->
 		{
 			close();
-			Main.sound('exit');
+			Main.sound('exit', 0.3);
 		});
-		exit.setGraphicSize(exit.width * 2);
-		exit.updateHitbox();
-		exit.label.setGraphicSize(exit.label.width * 2);
-		exit.label.updateHitbox();
+		exit.setPosition(50, 50);
 		add(exit);
 	}
 

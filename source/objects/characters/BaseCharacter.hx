@@ -70,6 +70,11 @@ class BaseCharacter extends FlxSprite
 
 		setGraphicSize(width * Main.pixel_mult);
 		updateHitbox();
+		final scaleX = this.scale.x;
+		final scaleY = this.scale.y;
+		scale.set(scaleX * 0.8, scaleY);
+		updateHitbox();
+		scale.set(scaleX, scaleY);
 
 		timer = new FlxTimer();
 		cooldownBar = new FlxSprite().makeGraphic(1, 1, FlxColor.GRAY);
@@ -236,8 +241,7 @@ class BaseCharacter extends FlxSprite
 				Main.sound('prism', 0.3);
 		}
 
-		final rawCooldown:Dynamic = SelectionState.habilitiesJSON.get(type).cooldown;
-		setCooldown((Std.isOfType(rawCooldown, Float) ? cast rawCooldown : Std.parseFloat(rawCooldown)));
+		setCooldown(SelectionState.attackProperty(type, 'cooldown'));
 		flipX = targetX < this.x + this.width / 2;
 	}
 
@@ -263,8 +267,7 @@ class BaseCharacter extends FlxSprite
 
 			trace(type);
 
-			final rawCost:Dynamic = SelectionState.habilitiesJSON.get(SelectionState.codeFromSuper(type)).cost;
-			magic -= (Std.isOfType(rawCost, Float) ? cast rawCost : Std.parseFloat(rawCost));
+			magic -= SelectionState.attackProperty(SelectionState.codeFromSuper(type), 'cost');
 
 			switch (type)
 			{
@@ -299,12 +302,8 @@ class BaseCharacter extends FlxSprite
 						fireBalls.push(fireBall);
 					}
 
-					final rawDuration:Dynamic = SelectionState.habilitiesJSON.get('fire').duration;
-					final caca:Float = Std.isOfType(rawDuration, Float) ? cast rawDuration : Std.parseFloat(rawDuration);
-
-					trace(rawDuration, caca, caca / fireNum);
-
-					FlxTimer.loop(caca / fireNum, (loop) ->
+					final duration:Float = SelectionState.attackProperty('fire', 'duration');
+					FlxTimer.loop(duration / fireNum, (loop) ->
 					{
 						var curBall:Fire = fireBalls.shift();
 						curBall.setTarget(target.x + (target.width - curBall.width) / 2, target.y + (target.height - curBall.height) / 2);
