@@ -8,6 +8,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
+import states.substates.ControlsSubState;
 
 class SettingsState extends FlxState
 {

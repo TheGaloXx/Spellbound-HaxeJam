@@ -15,19 +15,19 @@ class BaseParticle extends FlxSprite
 		switch (type)
 		{
 			case 'sparks':
-				loadGraphic('assets/images/sparks.png', true, 32, 32);
+				loadGraphic('assets/images/particles/sparks.png', true, 32, 32);
 				animation.add('sparks', [0, 1, 2, 3, 4], 12, false);
 				animation.play(type);
 
 				setGraphicSize(32 * Main.pixel_mult);
 			case 'explosion':
-				loadGraphic('assets/images/explosion.png', true, 22, 22);
+				loadGraphic('assets/images/particles/explosion.png', true, 22, 22);
 				animation.add('explosion', [5, 4, 3, 2, 1, 0], 12, false);
 				animation.play(type);
 
 				setGraphicSize(22 * Main.pixel_mult);
 			default:
-				loadGraphic('assets/images/particles.png', true, 16, 16);
+				loadGraphic('assets/images/particles/particles.png', true, 16, 16);
 				animation.add('bottle', [0, 1, 2, 3, 4], 12, false);
 				animation.add('smoke', [5, 6, 7], 0, false);
 				animation.play(type);

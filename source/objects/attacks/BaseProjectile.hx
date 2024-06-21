@@ -26,7 +26,7 @@ class BaseProjectile extends FlxSprite
 		this.size = size;
 		this.hitboxSize = hitboxSize;
 
-		loadGraphic('assets/images/attacks.png', true, 16, 16);
+		loadGraphic('assets/images/gameplay/attacks.png', true, 16, 16);
 		animation.add('bottle', [1, 3, 7], 0, false);
 		animation.add('spear', [8], 0, false);
 		animation.add('prism', [9], 0, false);

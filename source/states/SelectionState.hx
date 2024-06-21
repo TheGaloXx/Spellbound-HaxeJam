@@ -15,6 +15,7 @@ import haxe.Json;
 import objects.characters.CharacterBuild;
 import objects.ui.HabilityDescriptionBox;
 import openfl.Assets;
+import states.substates.TutorialSubState;
 
 class SelectionState extends FlxState
 {
@@ -151,7 +152,7 @@ class SelectionState extends FlxState
 		for (i in 0...6)
 		{
 			var portrait = new BoxOutline();
-			portrait.loadGraphic('assets/images/attack_portraits.png', true, 32, 32);
+			portrait.loadGraphic('assets/images/menu/attack_portraits.png', true, 32, 32);
 			portrait.animation.add('idle', [i], 0, false);
 			portrait.animation.play('idle');
 			portrait.active = false;
@@ -368,7 +369,7 @@ private class BoxOutline extends FlxSprite
 	{
 		super();
 
-		loadGraphic('assets/images/attack_portraits.png', true, 32, 32);
+		loadGraphic('assets/images/menu/attack_portraits.png', true, 32, 32);
 		animation.add('idle', [6], 0, false);
 		animation.add('selected', [7], 0, false);
 		animation.play('idle');

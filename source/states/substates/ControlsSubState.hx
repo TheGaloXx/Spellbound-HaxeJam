@@ -1,4 +1,4 @@
-package states;
+package states.substates;
 
 import flixel.FlxG;
 import flixel.FlxSubState;
@@ -19,7 +19,7 @@ class ControlsSubState extends FlxSubState
 
 	public function new(sprite:OptionSprite)
 	{
-		super(0xc5000000);
+		super(0xcf000000);
 
 		this.parent = sprite;
 	}
@@ -62,7 +62,7 @@ class ControlsSubState extends FlxSubState
 		newControls = Json.parse(Json.stringify(_));
 
 		var height:Float = 0;
-		var spacing:Float = 20;
+		var spacing:Float = 30;
 		for (i => curOption in [
 			'Move left: ${_.left}',
 			'Move down: ${_.down}',
@@ -71,7 +71,7 @@ class ControlsSubState extends FlxSubState
 			'Cast spell: ${_.spell}'
 		])
 		{
-			var control = new FlxText(0, 25, 300, curOption, 28);
+			var control = new FlxText(0, 25, 300, curOption, 32);
 			control.autoSize = false;
 			control.alignment = CENTER;
 			control.active = false;

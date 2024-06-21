@@ -71,7 +71,7 @@ class Main extends Sprite
 		if (!type_snd?.exists)
 		{
 			type_snd = new FlxSound();
-			type_snd.loadEmbedded('assets/sounds/type.$sound_extension');
+			type_snd.loadEmbedded('assets/sounds/$sound_extension/type.$sound_extension');
 		}
 		FlxG.sound.list.add(type_snd);
 
@@ -85,7 +85,15 @@ class Main extends Sprite
 		if (!FlxG.save.data.sfxEnabled)
 			volume = 0;
 
-		return FlxG.sound.play('assets/sounds/$name.$sound_extension', volume);
+		return FlxG.sound.play('assets/sounds/$sound_extension/$name.$sound_extension', volume);
+	}
+
+	public static function music(name:String, volume:Float):Void
+	{
+		if (!FlxG.save.data.musicEnabled)
+			volume = 0;
+
+		FlxG.sound.playMusic('assets/music/$sound_extension/$name.$sound_extension', volume);
 	}
 
 	public static function makeButton(text:String, callback:Void->Void):FlxButton

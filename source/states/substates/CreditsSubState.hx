@@ -1,10 +1,9 @@
-package states;
+package states.substates;
 
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 
 class CreditsSubState extends FlxSubState
 {

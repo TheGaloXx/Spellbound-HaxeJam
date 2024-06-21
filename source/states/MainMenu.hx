@@ -11,6 +11,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import states.substates.CreditsSubState;
 
 class MainMenu extends FlxState
 {
@@ -96,9 +97,8 @@ class MainMenu extends FlxState
 
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 		{
-			final volume:Float = (FlxG.save.data.musicEnabled ? 0.5 : 0);
-			FlxG.sound.playMusic('assets/music/menu_theme.' + Main.sound_extension, volume);
-			FlxG.sound.music.fadeIn(3, 0, volume);
+			Main.music('menu_theme', 0.5);
+			FlxG.sound.music.fadeIn(3, 0, FlxG.sound.music.volume);
 		}
 
 		FlxG.camera.fade(FlxColor.BLACK, 1, true);

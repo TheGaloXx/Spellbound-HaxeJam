@@ -20,6 +20,7 @@ import objects.particles.Explosion;
 import objects.particles.ParticlesManager.ParticleManager;
 import objects.particles.Sparks;
 import objects.ui.*;
+import states.substates.SuperSubState;
 
 class PlayState extends FlxState
 {
@@ -55,14 +56,14 @@ class PlayState extends FlxState
 	{
 		bg = new FlxSprite();
 		bg.active = false;
-		bg.loadGraphic('assets/images/background.png');
+		bg.loadGraphic('assets/images/gameplay/background.png');
 		bg.setGraphicSize(bg.width * Main.pixel_mult);
 		bg.updateHitbox();
 		bg.screenCenter();
 		add(bg);
 
 		barrier = new FlxSprite();
-		barrier.loadGraphic('assets/images/barrier.png');
+		barrier.loadGraphic('assets/images/gameplay/barrier.png');
 		barrier.setGraphicSize(barrier.width * Main.pixel_mult);
 		barrier.updateHitbox();
 		barrier.screenCenter();
@@ -258,8 +259,7 @@ class PlayState extends FlxState
 
 			hud.visible = true;
 
-			final volume:Float = (FlxG.save.data.musicEnabled ? 0.2 : 0);
-			FlxG.sound.playMusic('assets/music/battle_theme.' + Main.sound_extension, volume);
+			Main.music('battle_theme', 0.2);
 		});
 	}
 
