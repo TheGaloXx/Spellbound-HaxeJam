@@ -36,11 +36,12 @@ class SettingsState extends FlxState
 	{
 		#if html5
 		Main.changeFPS(60);
+		FlxG.fullscreen = false;
 		#else
 		Main.changeFPS(FlxG.save.data.fps);
+		FlxG.fullscreen = FlxG.save.data.fullscreen;
 		#end
 
-		FlxG.fullscreen = FlxG.save.data.fullscreen;
 		Controls.set(FlxG.save.data.controls);
 		if (FlxG.sound.music != null && FlxG.sound.music.playing)
 		{
@@ -57,8 +58,9 @@ class SettingsState extends FlxState
 	}
 
 	final allSettings:Array<String> = [
-		#if !html5 'fps', #end
-		'fullscreen',
+		#if !html5
+		'fps', 'fullscreen',
+		#end
 		'controls',
 		'musicEnabled',
 		'sfxEnabled',
