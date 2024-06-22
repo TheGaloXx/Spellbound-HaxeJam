@@ -38,7 +38,7 @@ class Main extends Sprite
 		SettingsState.init();
 
 		FlxG.sound.volume = 0.5; // we did make everything pretty loud, sorry
-		FlxG.keys.preventDefaultKeys = [TAB, UP, DOWN, LEFT, RIGHT, F1, F11, #if !debug F12 #end];
+		FlxG.keys.preventDefaultKeys = [ESCAPE, TAB, UP, DOWN, LEFT, RIGHT, F1, #if !debug F12 #end];
 		FlxG.sound.muteKeys = [];
 		FlxG.mouse.visible = true;
 		FlxG.signals.preStateCreate.add((_) -> FlxMouseEvent.removeAll());

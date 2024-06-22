@@ -18,6 +18,7 @@ import objects.attacks.ProjectileManager;
 import objects.characters.*;
 import objects.particles.Explosion;
 import objects.particles.ParticlesManager.ParticleManager;
+import objects.particles.Smoke;
 import objects.particles.Sparks;
 import objects.ui.*;
 import states.substates.PauseSubState;
@@ -269,6 +270,7 @@ class PlayState extends FlxState
 		});
 		FlxTimer.wait(3, () ->
 		{
+			MainMenu.initialized = false;
 			FlxG.cameras.fade(FlxColor.BLACK, 1, false, () -> FlxG.switchState(new MainMenu()));
 		});
 	}
@@ -387,7 +389,22 @@ class PlayState extends FlxState
 			if (projectile.type == 'light')
 			{
 				victim.magic += projectile.magicGain * FlxG.elapsed;
-				victim.health -= FlxG.elapsed * projectile.damage;
+				victim.hurt(FlxG.elapsed * projectile.damage, projectile, false);
+
+				if (particlesManager.smokeTime >= 0.1)
+				{
+					particlesManager.smokeTime = 0;
+
+					var smoke:Smoke = cast particlesManager.getNewParticle('smoke');
+
+					final centerX1:Float = projectile.getMidpoint().x;
+					final centerY1:Float = projectile.getMidpoint().y;
+
+					final centerX2:Float = victim.getMidpoint().x;
+					final centerY2:Float = victim.getMidpoint().y;
+
+					smoke.init((centerX1 + centerX2) / 2, (centerY1 + centerY2) / 2);
+				}
 
 				return;
 			}

@@ -18,7 +18,7 @@ class Player extends BaseCharacter
 
 	private inline function input():Void
 	{
-		if (!acceptInput)
+		if (!acceptInput || dead)
 			return;
 
 		if (canMove)

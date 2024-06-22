@@ -15,6 +15,7 @@ import states.substates.CreditsSubState;
 
 class MainMenu extends FlxState
 {
+	public static var initialized:Bool = false;
 	private static var alreadyTyped:Bool = false;
 
 	private var transitioning:Bool = false;
@@ -22,6 +23,7 @@ class MainMenu extends FlxState
 	private final curCode:Array<FlxKey> = [];
 	private var play:FlxText;
 	private var bg:FlxBackdrop;
+	private var logo:FlxSprite;
 
 	public static var scrollCords:Array<Float> = [];
 
@@ -35,13 +37,21 @@ class MainMenu extends FlxState
 		bg.velocity.set(70, 70);
 		add(bg);
 
-		var logo = new FlxSprite();
+		logo = new FlxSprite();
 		logo.loadGraphic('assets/images/menu/logo.png');
 		logo.setGraphicSize(logo.width * 2);
 		logo.updateHitbox();
 		logo.screenCenter();
 		logo.active = false;
 		add(logo);
+
+		if (!initialized)
+		{
+			logo.angle = FlxG.random.int(20, 20);
+			logo.y = FlxG.height + 150;
+
+			FlxTween.tween(logo, {y: (FlxG.height - logo.height) / 2, angle: 0}, 1, {startDelay: 0.25, ease: FlxEase.backOut});
+		}
 
 		addLogoBop(logo);
 
@@ -58,7 +68,7 @@ class MainMenu extends FlxState
 				Main.sound('confirm', 0.85);
 			}
 		});
-		credits.setPosition(50, FlxG.height - credits.height - 30);
+		credits.setPosition(30, FlxG.height - credits.height - 30);
 		add(credits);
 
 		var settings = Main.makeButton('Settings', () ->
@@ -69,7 +79,7 @@ class MainMenu extends FlxState
 				FlxG.switchState(new SettingsState());
 			}
 		});
-		settings.setPosition(50, credits.y - settings.height - 10);
+		settings.setPosition(credits.x, credits.y - settings.height - 10);
 		add(settings);
 
 		if (!alreadyTyped)
@@ -95,17 +105,44 @@ class MainMenu extends FlxState
 			add(play);
 		}
 
+		var changelog = new FlxSprite(settings.x);
+		changelog.loadGraphic('assets/images/menu/notification.png');
+		changelog.active = false;
+		changelog.setGraphicSize(changelog.width * Main.pixel_mult);
+		changelog.updateHitbox();
+		changelog.y = settings.y - changelog.height - 10;
+		add(changelog);
+
+		FlxMouseEvent.add(changelog, (spr) ->
+		{
+			if (!subState?.exists)
+			{
+				FlxG.openURL('https://github.com/TheGaloXx/Spellbound-HaxeJam/blob/main/CHANGELOG.md');
+			}
+		}, null, null, null, false, true, false);
+
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 		{
 			Main.music('menu_theme', 0.5);
 			FlxG.sound.music.fadeIn(3, 0, FlxG.sound.music.volume);
 		}
 
-		FlxG.camera.fade(FlxColor.BLACK, 1, true);
+		if (!initialized)
+			FlxG.camera.fade(FlxColor.BLACK, 0.5, true);
+
+		initialized = true;
 	}
+
+	var time:Float = 0;
 
 	override public function update(elapsed:Float)
 	{
+		if (logo.angle == 0)
+		{
+			time += elapsed;
+			logo.y = (FlxG.height - logo.height) / 2 + 50 * Math.sin(time * 2);
+		}
+
 		super.update(elapsed);
 
 		scrollCords = [bg.x, bg.y];

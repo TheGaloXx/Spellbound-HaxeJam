@@ -26,6 +26,8 @@ class CharacterBuild
 		supers.remove(build.super1);
 		build.super2 = FlxG.random.getObject(supers);
 
+		trace('Randomized build: $build.');
+
 		return build;
 	}
 

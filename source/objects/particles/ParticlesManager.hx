@@ -5,11 +5,13 @@ import flixel.util.FlxSort;
 
 class ParticleManager extends FlxTypedContainer<BaseParticle>
 {
+	public var smokeTime:Float = 0;
+
 	public function new()
 	{
 		super();
 
-		for (type in ['bottle', 'sparks', 'explosion'])
+		for (type in ['bottle', 'sparks', 'explosion', 'smoke'])
 		{
 			getNewParticle(type).kill(); // spawn at least one of each so it doesnt lag the first time you generate them
 		}
@@ -17,6 +19,8 @@ class ParticleManager extends FlxTypedContainer<BaseParticle>
 
 	override function update(elapsed:Float):Void
 	{
+		smokeTime += elapsed;
+
 		super.update(elapsed);
 
 		sort(FlxSort.byY);
@@ -47,6 +51,8 @@ class ParticleManager extends FlxTypedContainer<BaseParticle>
 					new Sparks();
 				case 'explosion':
 					new Explosion();
+				case 'smoke':
+					new Smoke();
 				default:
 					new BottleSplash();
 			}

@@ -44,6 +44,7 @@ class BaseParticle extends FlxSprite
 
 		velocity.set();
 		acceleration.set();
+		drag.set();
 
 		angle = 0;
 		alpha = 1;

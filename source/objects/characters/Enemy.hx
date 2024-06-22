@@ -109,6 +109,11 @@ class Enemy extends BaseCharacter
 		FlxG.watch.addQuick('AI:', this);
 	}
 
+	override function throwAttack(primary1:Bool, targetX:Float, targetY:Float)
+	{
+		super.throwAttack(primary1, targetX + ((primary1 ? build.primary1 : build.primary2) == 'bottle' ? -35 : 0), targetY);
+	}
+
 	private inline function calculateMovement():Void
 	{
 		targetX = FlxG.width / 2 + FlxG.random.float(0, FlxG.width / 2 - width);

@@ -93,6 +93,7 @@ class PauseSubState extends FlxSubState
 						case 'Exit to main menu':
 							close();
 							FlxG.sound.music.stop();
+							MainMenu.initialized = false;
 							FlxG.switchState(new MainMenu());
 					}
 				}

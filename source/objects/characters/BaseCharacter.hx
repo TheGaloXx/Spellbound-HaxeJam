@@ -181,7 +181,10 @@ class BaseCharacter extends FlxSprite
 			return;
 		}
 		else
-			Main.sound('hurt', 0.5);
+		{
+			if (projectile.type != 'light' || (projectile.type == 'light' && FlxG.random.bool(25)))
+				Main.sound('hurt', 0.5);
+		}
 
 		if (stun)
 		{
