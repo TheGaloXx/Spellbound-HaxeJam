@@ -2,6 +2,8 @@ package objects.attacks;
 
 import flixel.FlxSprite;
 import objects.characters.BaseCharacter;
+import scripts.Module;
+import scripts.ScriptHandler;
 import states.SelectionState;
 
 class BaseProjectile extends FlxSprite
@@ -17,6 +19,8 @@ class BaseProjectile extends FlxSprite
 	public var magicGain:Null<Float> = 10;
 	public var speed:Null<Float>;
 
+	public var script:Module;
+
 	public function new(type:String, speed:Float, size:Float = 1, hitboxSize:Float = 1)
 	{
 		super();
@@ -25,6 +29,7 @@ class BaseProjectile extends FlxSprite
 		this.speed = speed;
 		this.size = size;
 		this.hitboxSize = hitboxSize;
+		this.script = ScriptHandler.modules.get(type);
 
 		loadGraphic('assets/images/gameplay/attacks.png', true, 16, 16);
 		animation.add('bottle', [1, 3, 7], 0, false);
@@ -69,6 +74,9 @@ class BaseProjectile extends FlxSprite
 
 	override function kill():Void
 	{
+		if (script != null)
+			script.run("onKill");
+
 		active = false;
 		parent = null;
 

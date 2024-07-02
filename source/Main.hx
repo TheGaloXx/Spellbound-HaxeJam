@@ -2,12 +2,14 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxGame;
+import flixel.FlxState;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.sound.FlxSound;
 import flixel.ui.FlxButton;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
+import scripts.ScriptHandler;
 import states.SelectionState;
 import states.SettingsState;
 import states.StartScreen;
@@ -33,6 +35,8 @@ class Main extends Sprite
 		#end
 		#end
 
+		ScriptHandler.init();
+
 		FlxG.save.bind('Spellbound');
 		addChild(new FlxGame(0, 0, #if SKIP_INTRO SelectionState #else StartScreen #end, 60, 60, true, false));
 		SettingsState.init();
@@ -41,7 +45,7 @@ class Main extends Sprite
 		FlxG.keys.preventDefaultKeys = [ESCAPE, TAB, UP, DOWN, LEFT, RIGHT, F1, #if !debug F12 #end];
 		FlxG.sound.muteKeys = [];
 		FlxG.mouse.visible = true;
-		FlxG.signals.preStateCreate.add((_) -> FlxMouseEvent.removeAll());
+		FlxG.signals.preStateCreate.add(preStateCreate);
 		FlxG.fixedTimestep = false;
 
 		#if debug
@@ -120,6 +124,12 @@ class Main extends Sprite
 			FlxG.drawFramerate = cap;
 			FlxG.updateFramerate = cap;
 		}
+	}
+
+	function preStateCreate(state:FlxState):Void
+	{
+		FlxMouseEvent.removeAll();
+		ScriptHandler.clean();
 	}
 	/*
 	 *

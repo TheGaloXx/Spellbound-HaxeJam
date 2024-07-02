@@ -1,6 +1,5 @@
 package states;
 
-import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -21,6 +20,7 @@ import objects.particles.ParticlesManager.ParticleManager;
 import objects.particles.Smoke;
 import objects.particles.Sparks;
 import objects.ui.*;
+import scripts.ScriptHandler;
 import states.substates.PauseSubState;
 import states.substates.SuperSubState;
 
@@ -67,6 +67,21 @@ class PlayState extends FlxState
 		current = this;
 
 		FlxG.signals.postStateSwitch.removeAll();
+	}
+
+	function loadScripts():Void
+	{
+		for (script in ['bottle', 'fire', 'ice', 'light', 'prism', 'spear'])
+		{
+			ScriptHandler.load(script, ["state" => this]);
+		}
+
+		#if sys
+		for (script => i in ScriptHandler.customScripts)
+		{
+			ScriptHandler.load(script, ["state" => this]);
+		}
+		#end
 	}
 
 	function addStage():Void
@@ -171,6 +186,7 @@ class PlayState extends FlxState
 		final offset:Int = Std.int(9 * Main.pixel_mult / 2) * -1;
 		FlxG.mouse.load('assets/images/ui/reticle.png', Main.pixel_mult, offset, offset);
 
+		loadScripts();
 		addStage();
 		addCharacters();
 		addProjectiles();
