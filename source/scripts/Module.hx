@@ -27,15 +27,29 @@ class Module
 
 	public function run(func:String, args:Rest<Dynamic>)
 	{
+		// trace('Attempting to run $func.');
+
 		try
 		{
 			if (this.exists(func))
-				Reflect.callMethod(this.interp.variables, this.get(func), args.toArray());
+				return Reflect.callMethod(this.interp.variables, this.get(func), args.toArray());
 		}
 		catch (ex)
 		{
 			trace('Failed to execute $func on modules ($ex)');
 		}
+
+		return null;
+	}
+
+	public function getVar(func:String, args:Rest<Dynamic>):Dynamic
+	{
+		final v:Dynamic = run('get_$func', args);
+
+		if (v == null)
+			trace('Variable $func was not found in this script!');
+
+		return v;
 	}
 
 	public function get(field:String):Dynamic

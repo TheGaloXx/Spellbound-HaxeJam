@@ -16,16 +16,17 @@ class Bottle extends BaseProjectile
 		super('bottle', 700, 0.7, 0.9);
 	}
 
-	override public function init(posX:Float, posY:Float):Void
-	{
-		super.init(posX, posY);
+	/*
+		override public function init(posX:Float, posY:Float):Void
+		{
+			super.init(posX, posY);
 
-		animation.curAnim.curFrame = FlxG.random.int(0, 2);
+			animation.curAnim.curFrame = FlxG.random.int(0, 2);
 
-		startX = x;
-		startY = y;
-	}
-
+			startX = x;
+			startY = y;
+		}
+	 */
 	override function update(elapsed:Float):Void
 	{
 		super.update(elapsed);

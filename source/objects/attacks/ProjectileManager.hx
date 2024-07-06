@@ -43,24 +43,26 @@ class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 
 		if (projectile == null)
 		{
-			projectile = switch (type)
-			{
-				case 'spear':
-					new Spear();
-				case 'bottle':
-					new Bottle();
-				case 'prism':
-					new IcePrism();
-				case 'ice':
-					new Ice();
-				case 'light':
-					new LightBall();
-				case 'fire':
-					new Fire();
-				default:
-					new Spear();
-			}
+			/*
+				projectile = switch (type)
+				{
+						case 'spear':
+							new Spear();
+						case 'bottle':
+							new Bottle();
+						case 'prism':
+							new IcePrism();
+						case 'ice':
+							new Ice();
+						case 'light':
+							new LightBall();
+						case 'fire':
+							new Fire();
+					default:
+						new BaseProjectile('spear', 2, 2, 2);
+			}*/
 
+			projectile = new BaseProjectile('spear', 2, 2, 2);
 			add(projectile);
 		}
 

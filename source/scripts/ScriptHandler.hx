@@ -1,6 +1,7 @@
 package scripts;
 
 import flixel.FlxG;
+import flixel.util.FlxAxes;
 import haxe.Rest;
 import haxe.ds.StringMap;
 import hscript.Expr;
@@ -17,7 +18,15 @@ import sys.io.File;
 // Thanks to my friend Sanco (again) for teaching me about hscript!!!
 class ScriptHandler
 {
-	public static var exposure:StringMap<Dynamic> = ["FlxG" => FlxG];
+	public static var exposure:StringMap<Dynamic> = [
+		"FlxG" => FlxG,
+		"Math" => Math,
+		"Utils" => Utils,
+		"FlxAxes" => {
+			X: FlxAxes.X,
+			Y: FlxAxes.Y
+		}
+	];
 	public static var modules:Map<String, Module> = [];
 
 	private static final parser:Parser = new Parser();
@@ -40,7 +49,7 @@ class ScriptHandler
 		#if sys
 		customScripts.clear();
 
-		final path:String = './assets/scripts/';
+		final path:String = './custom/scripts/';
 		if (!FileSystem.exists(path))
 		{
 			FileSystem.createDirectory(path);

@@ -33,10 +33,10 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 
 	<source path="source" />
-	<assets path="assets" preload="true" exclude="*.ogg" if="web"/>
-	<assets path="assets" preload="true" exclude="*.mp3"  unless="web"/>
-	<assets path="assets/data" embed="true"/>
-	<assets path="assets/scripts" embed="true"/>
+	<assets path="assets" preload="true" exclude="*.ogg" if="web" embed="true"/>
+	<assets path="assets" preload="true" exclude="*.mp3"  unless="web" embed="true"/>
+
+	<assets path="custom" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 

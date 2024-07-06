@@ -9,13 +9,14 @@ class LightBall extends BaseProjectile
 		super('light', 200, 3, 0.8);
 	}
 
-	override function init(posX:Float, posY:Float):Void
-	{
-		super.init(posX, 0);
+	/*
+		override function init(posX:Float, posY:Float):Void
+		{
+			super.init(posX, 0);
 
-		y = (FlxG.height - this.height) / 2;
-	}
-
+			y = (FlxG.height - this.height) / 2;
+		}
+	 */
 	var time:Float = 0;
 
 	override function update(elapsed:Float):Void

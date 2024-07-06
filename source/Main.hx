@@ -131,21 +131,4 @@ class Main extends Sprite
 		FlxMouseEvent.removeAll();
 		ScriptHandler.clean();
 	}
-	/*
-	 *
-	 * 
-	 * 
-	 */
-	/* Too late to use this...
-		public static inline function midPoint(staticSprite:FlxObject, toMoveSprite:FlxObject, axes:AxesType):Float
-		{
-			return switch (axes)
-			{
-				case X:
-					staticSprite.x + (staticSprite.width - toMoveSprite.width) / 2;
-				case Y:
-					staticSprite.y + (staticSprite.height - toMoveSprite.height) / 2;
-			};
-		}
-	 */
 }

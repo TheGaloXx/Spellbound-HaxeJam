@@ -11,7 +11,6 @@ import flixel.util.FlxTimer;
 import objects.attacks.BaseProjectile;
 import objects.attacks.Bottle;
 import objects.attacks.IcePrism;
-import objects.attacks.Spear;
 import objects.attacks.supers.Fire;
 import objects.attacks.supers.Ice;
 import objects.attacks.supers.LightBall;
@@ -220,45 +219,50 @@ class BaseCharacter extends FlxSprite
 
 		var type:String = (primary1 ? build.primary1 : build.primary2);
 
-		switch (type)
-		{
-			case 'spear':
-				var spear:Spear = cast PlayState.current.projectilesManager.getNewProjectile('spear');
-				spear.init(this.x + (this.width - spear.width) / 2, this.y + (this.height - spear.height) / 2);
-				spear.setTarget(targetX, targetY);
-				spear.parent = this;
+		var attack = PlayState.current.projectilesManager.getNewProjectile(type);
+		attack.init(this);
 
-				Main.sound('throw', 0.5);
-			case 'bottle':
-				var bottle:Bottle = cast PlayState.current.projectilesManager.getNewProjectile('bottle');
-				bottle.init(this.x + (this.width - bottle.width) / 2, this.y + (this.height - bottle.height) / 2);
-				bottle.setTarget(targetX, targetY);
-				bottle.parent = this;
+		/*
+			switch (type)
+			{
+				case 'spear':
+					var spear:Spear = cast PlayState.current.projectilesManager.getNewProjectile('spear');
+					spear.init(this.x + (this.width - spear.width) / 2, this.y + (this.height - spear.height) / 2);
+					spear.setTarget(targetX, targetY);
+					spear.parent = this;
 
-				Main.sound('throw', 0.5);
-			case 'prism':
-				var firstAngle:Float = 361;
-				for (i in 0...3)
-				{
-					var prism:IcePrism = cast PlayState.current.projectilesManager.getNewProjectile('prism');
-					prism.init(this.x + (this.width - prism.width) / 2, this.y + (this.height - prism.height) / 2);
-					prism.parent = this;
+					Main.sound('throw', 0.5);
+				case 'bottle':
+					var bottle:Bottle = cast PlayState.current.projectilesManager.getNewProjectile('bottle');
+					bottle.init(this.x + (this.width - bottle.width) / 2, this.y + (this.height - bottle.height) / 2);
+					bottle.setTarget(targetX, targetY);
+					bottle.parent = this;
 
-					if (firstAngle == 361)
+					Main.sound('throw', 0.5);
+				case 'prism':
+					var firstAngle:Float = 361;
+					for (i in 0...3)
 					{
-						prism.setTarget(targetX, targetY);
-						firstAngle = prism.angle;
-					}
-					else
-					{
-						prism.setTarget(0, 0, firstAngle + 20 * (i == 1 ? -1 : 1));
-					}
-				}
+						var prism:IcePrism = cast PlayState.current.projectilesManager.getNewProjectile('prism');
+						prism.init(this.x + (this.width - prism.width) / 2, this.y + (this.height - prism.height) / 2);
+						prism.parent = this;
 
-				Main.sound('prism', 0.3);
-		}
+						if (firstAngle == 361)
+						{
+							prism.setTarget(targetX, targetY);
+							firstAngle = prism.angle;
+						}
+						else
+						{
+							prism.setTarget(0, 0, firstAngle + 20 * (i == 1 ? -1 : 1));
+						}
+					}
 
-		setCooldown(SelectionState.attackProperty(type, 'cooldown'));
+					Main.sound('prism', 0.3);
+			}
+		 */
+
+		setCooldown(attack.cooldown);
 		flipX = targetX < this.x + this.width / 2;
 	}
 
@@ -286,47 +290,49 @@ class BaseCharacter extends FlxSprite
 
 			magic -= SelectionState.attackProperty(SelectionState.codeFromSuper(type), 'cost');
 
-			switch (type)
-			{
-				case 'ice' | 'glacial prison':
-					var ice:Ice = cast PlayState.current.projectilesManager.getNewProjectile('ice');
-					ice.init(0, 0);
-					ice.setTarget(target);
-					ice.parent = this;
-				case 'light' | 'light nova':
-					var ball:LightBall = cast PlayState.current.projectilesManager.getNewProjectile('light');
-					ball.init(this.x + this.width / 2, 0);
-					ball.velocity.x = ball.speed * (flipX ? -1 : 1);
-					ball.flipX = flipX;
-					ball.parent = this;
-				case 'fire' | 'inferno storm':
-					var fireBalls:Array<Fire> = [];
-					final fireNum:Int = 5;
-					final angleStep:Float = (2 * Math.PI) / fireNum;
+			/*
+				switch (type)
+				{
+					case 'ice' | 'glacial prison':
+						var ice:Ice = cast PlayState.current.projectilesManager.getNewProjectile('ice');
+						ice.init(0, 0);
+						ice.setTarget(target);
+						ice.parent = this;
+					case 'light' | 'light nova':
+						var ball:LightBall = cast PlayState.current.projectilesManager.getNewProjectile('light');
+						ball.init(this.x + this.width / 2, 0);
+						ball.velocity.x = ball.speed * (flipX ? -1 : 1);
+						ball.flipX = flipX;
+						ball.parent = this;
+					case 'fire' | 'inferno storm':
+						var fireBalls:Array<Fire> = [];
+						final fireNum:Int = 5;
+						final angleStep:Float = (2 * Math.PI) / fireNum;
 
-					for (i in 0...fireNum)
-					{
-						final angle:Float = i * angleStep;
-						var fireBall:Fire = cast PlayState.current.projectilesManager.getNewProjectile('fire');
-						fireBall.init(this.x
-							+ (this.width - fireBall.width) / 2
-							+ this.width * 1.5 * Math.cos(angle),
-							this.y
-							+ (this.height - fireBall.height) / 2
-							+ this.width * 1.5 * Math.sin(angle));
-						fireBall.flipX = flipX;
-						fireBall.parent = this;
-						fireBalls.push(fireBall);
-					}
+						for (i in 0...fireNum)
+						{
+							final angle:Float = i * angleStep;
+							var fireBall:Fire = cast PlayState.current.projectilesManager.getNewProjectile('fire');
+							fireBall.init(this.x
+								+ (this.width - fireBall.width) / 2
+								+ this.width * 1.5 * Math.cos(angle),
+								this.y
+								+ (this.height - fireBall.height) / 2
+								+ this.width * 1.5 * Math.sin(angle));
+							fireBall.flipX = flipX;
+							fireBall.parent = this;
+							fireBalls.push(fireBall);
+						}
 
-					final duration:Float = SelectionState.attackProperty('fire', 'duration');
-					FlxTimer.loop(duration / fireNum, (loop) ->
-					{
-						var curBall:Fire = fireBalls.shift();
-						curBall.setTarget(target.x + (target.width - curBall.width) / 2, target.y + (target.height - curBall.height) / 2);
-						Main.sound('throw', 0.2);
-					}, fireNum);
-			}
+						final duration:Float = SelectionState.attackProperty('fire', 'duration');
+						FlxTimer.loop(duration / fireNum, (loop) ->
+						{
+							var curBall:Fire = fireBalls.shift();
+							curBall.setTarget(target.x + (target.width - curBall.width) / 2, target.y + (target.height - curBall.height) / 2);
+							Main.sound('throw', 0.2);
+						}, fireNum);
+				}
+			 */
 
 			FlxG.camera.flash(FlxColor.WHITE, 0.1);
 		}
