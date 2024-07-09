@@ -10,12 +10,14 @@ import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 import scripts.ScriptHandler;
-import states.SelectionState;
 import states.SettingsState;
 import states.StartScreen;
 #if !debug
 import haxe.Log;
 import haxe.PosInfos;
+#end
+#if SKIP_INTRO
+import states.SelectionState;
 #end
 
 class Main extends Sprite

@@ -2,10 +2,8 @@ package objects.attacks;
 
 import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.util.FlxSort;
-import objects.attacks.supers.Fire;
-import objects.attacks.supers.Ice;
-import objects.attacks.supers.LightBall;
-import states.SelectionState;
+import objects.characters.BaseCharacter;
+import states.PlayState;
 
 class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 {
@@ -62,7 +60,7 @@ class ProjectileManager extends FlxTypedContainer<BaseProjectile>
 						new BaseProjectile('spear', 2, 2, 2);
 			}*/
 
-			projectile = new BaseProjectile('spear', 2, 2, 2);
+			projectile = new BaseProjectile(type, 2, 2, 2);
 			add(projectile);
 		}
 

@@ -73,7 +73,7 @@ class BaseProjectile extends FlxSprite
 		loadGraphic(bitmap, script?.getVar('animated'), frameSize, frameSize);
 	}
 
-	public function init(parent:BaseCharacter):Void
+	public function init(parent:BaseCharacter, runScript:Bool = true):Void
 	{
 		this.parent = parent;
 		this.enemy = (PlayState.current.player == parent ? PlayState.current.enemy : PlayState.current.player);
@@ -94,7 +94,8 @@ class BaseProjectile extends FlxSprite
 		checkTime = 0;
 		timeAlive = 0;
 
-		script?.run('onRun', this, PlayState.current);
+		if (runScript)
+			script?.run('onRun', this, PlayState.current);
 	}
 
 	public inline function setAttackHitbox():Void
